@@ -110,7 +110,19 @@ The system supports full CRUD operations for:
 
 ## 📸 Screenshots
 
-*(Add screenshots of your application here)*
+## 📸 Screenshots
+
+### Dashboard
+![Dashboard](screenshots/warehouses.png)
+
+### Products
+![Products](screenshots/products.png)
+
+### Sales
+![Sales](screenshots/categories.png)
+
+### Sales
+![Sales](screenshots/models.png)
 
 ---
 
