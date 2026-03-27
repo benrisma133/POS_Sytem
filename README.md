@@ -131,7 +131,7 @@ The system supports full CRUD operations for:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/benrisma133/POS_Sytem.git
    ```
 
 2. Open the project in Visual Studio
