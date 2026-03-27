@@ -1,0 +1,319 @@
+﻿<UserControl x:Class="POS_WPF.Controls.ProductCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="580" Height="360">
+
+    <Border CornerRadius="16"
+            Background="#F5F5F5"
+            Padding="20"
+            BorderBrush="#5C5C5C"
+            BorderThickness="1">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ================= TOP ================= -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Product Name -->
+                <TextBlock x:Name="txtProductName"
+                           Text="Product Name"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="#2C2C2C"/>
+
+                <!-- Warehouse Badge -->
+                <Border Grid.Column="1"
+                        Background="#4A4A4A"
+                        CornerRadius="8"
+                        Padding="10,6"
+                        Margin="8,0,0,0">
+                    <TextBlock x:Name="txtWarehouse"
+                               Text="Warehouse"
+                               Foreground="#E5C95F"
+                               FontWeight="Bold"
+                               FontSize="14"/>
+                </Border>
+            </Grid>
+
+            <!-- ================= DESCRIPTION ================= -->
+            <TextBlock x:Name="txtDescription"
+                       Grid.Row="1"
+                       Margin="0,10,0,14"
+                       Text="Product description goes here."
+                       FontSize="14"
+                       FontStyle="Italic"
+                       Foreground="#5C5C5C"
+                       TextWrapping="Wrap"/>
+
+            <!-- ================= INFO CARDS ================= -->
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- CATEGORY CARD -->
+                <Border Grid.Row="0" Grid.Column="0"
+            Margin="0,0,10,10"
+            Background="#FFFFFF"
+            CornerRadius="14"
+            Padding="14"
+            BorderBrush="#E5E5E5"
+            BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Cursor" Value="Arrow"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="0" Color="Transparent"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFF8F0"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect ShadowDepth="2" BlurRadius="10" Color="#888888" Opacity="0.25"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="Category"
+                       FontSize="14"
+                       Foreground="#777"
+                       HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="txtCategory"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="#E5C95F"
+                       HorizontalAlignment="Center"
+                       Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- MODEL CARD -->
+                <Border Grid.Row="0" Grid.Column="1"
+            Margin="10,0,0,10"
+            Background="#FFFFFF"
+            CornerRadius="14"
+            Padding="14"
+            BorderBrush="#E5E5E5"
+            BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Cursor" Value="Arrow"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="0" Color="Transparent"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFF8F0"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect ShadowDepth="2" BlurRadius="10" Color="#888888" Opacity="0.25"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="Model"
+                       FontSize="14"
+                       Foreground="#777"
+                       HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="txtModel"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="#E5C95F"
+                       HorizontalAlignment="Center"
+                       Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- PRICE CARD -->
+                <Border Grid.Row="1" Grid.Column="0"
+            Margin="0,10,10,0"
+            Background="#FFFFFF"
+            CornerRadius="14"
+            Padding="14"
+            BorderBrush="#E5E5E5"
+            BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Cursor" Value="Arrow"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="0" Color="Transparent"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFF8F0"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect ShadowDepth="2" BlurRadius="10" Color="#888888" Opacity="0.25"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="Price"
+                       FontSize="14"
+                       Foreground="#777"
+                       HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="txtPrice"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       Foreground="#E5C95F"
+                       HorizontalAlignment="Center"
+                       Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- STOCK CARD -->
+                <Border Grid.Row="1" Grid.Column="1"
+            Margin="10,10,0,0"
+            Background="#FFFFFF"
+            CornerRadius="14"
+            Padding="14"
+            BorderBrush="#E5E5E5"
+            BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Cursor" Value="Arrow"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="0" Color="Transparent"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFF8F0"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect ShadowDepth="2" BlurRadius="10" Color="#888888" Opacity="0.25"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="Stock"
+                       FontSize="14"
+                       Foreground="#777"
+                       HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="txtStock"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#E5C95F"
+                       HorizontalAlignment="Center"
+                       Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+
+
+
+
+            <!-- ================= LINKS ================= -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,12,0,0">
+
+                <!-- UPDATE -->
+                <TextBlock x:Name="txtUpdate"
+                           Text="Update"
+                           Tag="Update"
+                           Cursor="Hand"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="#FF8C42"
+                           Margin="0,0,16,0">
+
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextDecorations" Value="{x:Null}"/>
+                            <Style.Triggers>
+
+                                <!-- Hover -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#E6762F"/>
+                                    <Setter Property="TextDecorations" Value="Underline"/>
+                                </Trigger>
+
+                                <!-- Press -->
+                                <Trigger Property="IsMouseCaptured" Value="True">
+                                    <Setter Property="Opacity" Value="0.6"/>
+                                </Trigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- TRANSFER -->
+                <TextBlock x:Name="txtTransfer"
+                           Text="Transfer"
+                           Tag="Transfer"
+                           Cursor="Hand"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="#FF8C42">
+
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextDecorations" Value="{x:Null}"/>
+                            <Style.Triggers>
+
+                                <!-- Hover -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#E6762F"/>
+                                    <Setter Property="TextDecorations" Value="Underline"/>
+                                </Trigger>
+
+                                <!-- Press -->
+                                <Trigger Property="IsMouseCaptured" Value="True">
+                                    <Setter Property="Opacity" Value="0.6"/>
+                                </Trigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</UserControl>

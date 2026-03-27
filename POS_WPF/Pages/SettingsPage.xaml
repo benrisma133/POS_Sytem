@@ -1,0 +1,215 @@
+﻿<UserControl x:Class="POS_WPF.Pages.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:POS_WPF"
+             DataContext="{Binding Source={x:Static local:LanguageManager.Instance}}"
+             Background="#f7f7fb"
+             Loaded="UserControl_Loaded">
+
+    <Grid Margin="20,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER: Icon + Title -->
+        <DockPanel Grid.Row="0" Margin="0,20,20,20" LastChildFill="False">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" DockPanel.Dock="Left">
+                <!-- Settings Gear Icon -->
+                <Viewbox Width="26" Height="26" Margin="0,0,10,0">
+                    <Path Fill="#FF8C42" Stretch="Uniform"
+                          Data="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.32.07-.65.07-.98s-.03-.67-.07-1l2.16-1.63c.19-.15.24-.42.12-.64l-2.05-3.55c-.12-.22-.39-.3-.61-.22l-2.55 1.03c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98L4.89 5.02c-.23-.08-.49 0-.61.22L2.23 8.79c-.12.21-.08.49.12.64L4.51 11c-.04.32-.07.64-.07.98s.03.67.07 1l-2.16 1.63c-.19.15-.24.42-.12.64l2.05 3.55c.12.22.39.3.61.22l2.55-1.03c.52.4 1.08.73 1.69.98l.38 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.55 1.03c.22.08.49 0 .61-.22l2.05-3.55c.12-.22.07-.49-.12-.64l-2.16-1.63z"/>
+                </Viewbox>
+                <TextBlock Text="{Binding Strings[Settings]}" FontSize="26" FontWeight="Bold" Foreground="#4A4A4A" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- SETTINGS CONTENT -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      PanningMode="VerticalOnly"
+                      ClipToBounds="True"
+                      Margin="0,0,20,20">
+
+            <ScrollViewer.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Width" Value="6"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                        <Track.Thumb>
+                                            <Thumb>
+                                                <Thumb.Template>
+                                                    <ControlTemplate TargetType="Thumb">
+                                                        <Rectangle Fill="#9CA3AF" RadiusX="3" RadiusY="3"/>
+                                                    </ControlTemplate>
+                                                </Thumb.Template>
+                                            </Thumb>
+                                        </Track.Thumb>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ScrollViewer.Resources>
+
+            <StackPanel>
+
+                <!-- ══════════════════════════════════════════════ -->
+                <!--  SECTION: Appearance                          -->
+                <!-- ══════════════════════════════════════════════ -->
+                <TextBlock Text="{Binding Strings[Appearance]}"
+                           FontSize="13" FontWeight="SemiBold"
+                           Foreground="#A4B0BE"
+                           Margin="0,0,0,10"/>
+
+                <Border Background="White" CornerRadius="14"
+                        Padding="24,20" Margin="10,0,10,20"
+                        Effect="{StaticResource DropShadow}">
+                    <StackPanel>
+
+                        <!-- Dark / Light Mode Row -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Icon -->
+                            <Viewbox Width="22" Height="22" Margin="0,0,14,0" VerticalAlignment="Center">
+                                <Path x:Name="ThemeIcon"
+                                      Fill="#FF8C42" Stretch="Uniform"
+                                      Data="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+                            </Viewbox>
+
+                            <!-- Label + description -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="txtThemeLabel"
+                                           Text="{Binding Strings[LightMode]}"
+                                           FontSize="15" FontWeight="SemiBold"
+                                           Foreground="#2C3E50"/>
+                                <TextBlock x:Name="txtThemeDesc"
+                                           Text="{Binding Strings[DarkModeDesc]}"
+                                           FontSize="12" Foreground="#95A5A6"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <!-- Toggle Switch -->
+                            <ToggleButton x:Name="toggleTheme"
+                                          Grid.Column="2"
+                                          Width="52" Height="28"
+                                          VerticalAlignment="Center"
+                                          Cursor="Hand"
+                                          Checked="toggleTheme_Checked"
+                                          Unchecked="toggleTheme_Unchecked"
+                                          Style="{StaticResource ToggleSwitchStyle}"/>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════ -->
+                <!--  SECTION: Language                            -->
+                <!-- ══════════════════════════════════════════════ -->
+                <TextBlock Text="{Binding Strings[LanguageRegion]}"
+                           FontSize="13" FontWeight="SemiBold"
+                           Foreground="#A4B0BE"
+                           Margin="0,0,0,10"/>
+
+                <Border Background="White" CornerRadius="14"
+                        Padding="24,20" Margin="10,0,10,20"
+                        Effect="{StaticResource DropShadow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="240"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Globe Icon -->
+                        <Viewbox Width="22" Height="22" Margin="0,0,14,0" VerticalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="#FF8C42" StrokeThickness="1.5" Fill="Transparent"
+                                      Data="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>
+                                <Path Stroke="#FF8C42" StrokeThickness="1.5" Fill="Transparent"
+                                      Data="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </Canvas>
+                        </Viewbox>
+
+                        <!-- Label -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Strings[DisplayLanguage]}"
+                                       FontSize="15" FontWeight="SemiBold"
+                                       Foreground="#2C3E50"/>
+                            <TextBlock Text="{Binding Strings[DisplayLanguageDesc]}"
+                                       FontSize="12" Foreground="#95A5A6"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <!-- Language ComboBox -->
+                        <ComboBox x:Name="cmbLanguage"
+                                  Grid.Column="2"
+                                  Style="{StaticResource ModernComboBox}"
+                                  ItemContainerStyle="{StaticResource ModernComboBoxItem}"
+                                  Width="220"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"
+                                  Cursor="Hand"
+                                  SelectionChanged="cmbLanguage_SelectionChanged">
+                            <ComboBoxItem Content="🇺🇸  English" Tag="en-US"/>
+                            <ComboBoxItem Content="🇸🇦  العربية" Tag="ar-SA"/>
+                        </ComboBox>
+                    </Grid>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════ -->
+                <!--  SECTION: About                               -->
+                <!-- ══════════════════════════════════════════════ -->
+                <TextBlock Text="{Binding Strings[About]}"
+                           FontSize="13" FontWeight="SemiBold"
+                           Foreground="#A4B0BE"
+                           Margin="0,0,0,10"/>
+
+                <Border Background="White" CornerRadius="14"
+                        Padding="24,20" Margin="10,0,10,20"
+                        Effect="{StaticResource DropShadow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Viewbox Width="22" Height="22" Margin="0,0,14,0" VerticalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="#FF8C42" StrokeThickness="1.8" Fill="Transparent"
+                                      Data="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 9v6m0-10v1"/>
+                            </Canvas>
+                        </Viewbox>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="POS Application"
+                                       FontSize="15" FontWeight="SemiBold"
+                                       Foreground="#2C3E50"/>
+                            <TextBlock Text="{Binding Strings[Version]}"
+                                       FontSize="12" Foreground="#95A5A6"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Strings[Copyright]}"
+                                   FontSize="12" Foreground="#BDC3C7"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

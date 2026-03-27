@@ -1,0 +1,513 @@
+﻿<Window x:Class="POS_WPF.TestSidebarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="POS System" Height="650" Width="1200"
+        MinHeight="650" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        xmlns:local="clr-namespace:POS_WPF"
+        SizeChanged="Window_SizeChanged"
+        FlowDirection="{Binding CurrentFlowDirection}"
+        Loaded="MainWindow_Loaded">
+
+    <Window.Resources>
+
+        <!-- Sweet Hamburger Button Style -->
+        <Style x:Key="SweetHamburgerButton" TargetType="Button">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="SizeWE"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        CornerRadius="8"
+                        Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FF8C42"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E67630"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- IconStyle for Hamburger Menu -->
+        <Style x:Key="HamburgerIconStyle" TargetType="Path">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Stroke" Value="White"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="StrokeStartLineCap" Value="Round"/>
+            <Setter Property="StrokeEndLineCap" Value="Round"/>
+            <Setter Property="Stretch" Value="Uniform"/>
+            <Setter Property="Margin" Value="0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                    <Setter Property="Stroke" Value="White"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsPressed, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                    <Setter Property="Stroke" Value="White"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ProfileBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#4A4A4A"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5E5E5E"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Sweet Gray Button Style with Hover Accent -->
+        <Style x:Key="MenuBtn" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="0,6"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Background" Value="#4A4A4A"/>
+            <Setter Property="Foreground" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+
+                            <!-- Hover -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#5C5C5C"/>
+                                <Setter Property="Foreground" Value="#FF8C42"/>
+                            </Trigger>
+
+                            <!-- Pressed -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2C2C2C"/>
+                            </Trigger>
+
+                            <!-- Active (clicked) -->
+                            <Trigger Property="Tag" Value="Active">
+                                <Setter TargetName="border" Property="Background" Value="#5C5C5C"/>
+                                <Setter Property="Foreground" Value="#FF8C42"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Ultra Thin ScrollBar -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#888"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track">
+                                <Track.Thumb>
+                                    <Thumb Background="{TemplateBinding Foreground}"
+                                   />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Window.DataContext>
+        <Binding Source="{x:Static local:LanguageManager.Instance}" />
+    </Window.DataContext>
+
+    <Grid>
+        
+        <!-- SIDEBAR -->
+        <Border x:Name="Sidebar" Width="280" HorizontalAlignment="Left" Background="#3B3B3B">
+            <Grid>
+                <!-- Define rows: menu items (scrollable) + profile -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <!-- scrollable menu -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- profile -->
+                </Grid.RowDefinitions>
+
+                <!-- Hamburger Menu Button -->
+                <Button Margin="0 ,10 ,6 ,0"  VerticalAlignment="Center" Grid.Row="0" x:Name="HamburgerBtn" HorizontalAlignment="Right" Style="{StaticResource SweetHamburgerButton}" Click="HamburgerBtn_Click">
+                    <Path x:Name="HamburgerPath" Style="{StaticResource HamburgerIconStyle}" Data="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4l-6.3 6.31-1.41-1.42L9.17 12 2.88 5.71l1.41-1.42 6.3 6.3 6.29-6.3z"/>
+                </Button>
+
+                <ScrollViewer 
+                    
+                    VerticalScrollBarVisibility="Auto" 
+                    HorizontalScrollBarVisibility="Disabled" 
+                    Grid.Row="1"
+                    x:Name="MainScroll"
+                    PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+
+                    
+
+                    <!-- Buttons -->
+                    <StackPanel Margin="10" >
+
+                        <!-- Dashboard -->
+                        <Button x:Name="DashboardButton" Click="Dashboard_Click" Style="{StaticResource MenuBtn}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Data="M3 8.976C3 4.05476 4.05476 3 8.976 3H15.024 C19.9452 3 21 4.05476 21 8.976V15.024 C21 19.9452 19.9452 21 15.024 21H8.976 C4.05476 21 3 19.9452 3 15.024V8.976Z"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" Fill="Transparent"/>
+                                        <Path Data="M21 9L3 9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                        <Path Data="M9 21L9 9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                    </Canvas>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Dashboard]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Client Sale -->
+                        <Button Click="Client_Click" Style="{StaticResource MenuBtn}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon -->
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform"
+                      Data="M14 12.25C13.2583 12.25 12.5333 12.0301 11.9166 11.618C11.2999 11.206 10.8193 10.6203 10.5355 9.93506C10.2516 9.24984 10.1774 8.49584 10.3221 7.76841C10.4668 7.04098 10.8239 6.3728 11.3484 5.84835C11.8728 5.3239 12.541 4.96675 13.2684 4.82206C13.9958 4.67736 14.7498 4.75162 15.4351 5.03545C16.1203 5.31928 16.706 5.79993 17.118 6.41661C17.5301 7.0333 17.75 7.75832 17.75 8.5C17.75 9.49456 17.3549 10.4484 16.6517 11.1517C15.9484 11.8549 14.9946 12.25 14 12.25ZM14 6.25C13.555 6.25 13.12 6.38196 12.75 6.62919C12.38 6.87643 12.0916 7.22783 11.9213 7.63896C11.751 8.0501 11.7064 8.5025 11.7932 8.93895C11.8801 9.37541 12.0943 9.77632 12.409 10.091C12.7237 10.4057 13.1246 10.62 13.561 10.7068C13.9975 10.7936 14.4499 10.749 14.861 10.5787C15.2722 10.4084 15.6236 10.12 15.8708 9.75003C16.118 9.38002 16.25 8.94501 16.25 8.5C16.25 7.90326 16.0129 7.33097 15.591 6.90901C15.169 6.48705 14.5967 6.25 14 6.25Z M21 19.25C20.8019 19.2474 20.6126 19.1676 20.4725 19.0275C20.3324 18.8874 20.2526 18.6981 20.25 18.5C20.25 16.55 19.19 15.25 14 15.25C8.81 15.25 7.75 16.55 7.75 18.5C7.75 18.6989 7.67098 18.8897 7.53033 19.0303C7.38968 19.171 7.19891 19.25 7 19.25C6.80109 19.25 6.61032 19.171 6.46967 19.0303C6.32902 18.8897 6.25 18.6989 6.25 18.5C6.25 13.75 11.68 13.75 14 13.75C16.32 13.75 21.75 13.75 21.75 18.5C21.7474 18.6981 21.6676 18.8874 21.5275 19.0275C21.3874 19.1676 21.1981 19.2474 21 19.25Z M8.31999 13.06H7.99999C7.20434 12.9831 6.47184 12.5933 5.96361 11.9763C5.45539 11.3593 5.21308 10.5657 5.28999 9.77001C5.36691 8.97436 5.75674 8.24186 6.37373 7.73363C6.99073 7.22541 7.78434 6.9831 8.57999 7.06001C8.68201 7.0644 8.78206 7.08957 8.87401 7.13399C8.96596 7.1784 9.04787 7.24113 9.11472 7.31831C9.18157 7.3955 9.23196 7.48553 9.26279 7.58288C9.29362 7.68023 9.30425 7.78285 9.29402 7.88445C9.28379 7.98605 9.25292 8.08449 9.20331 8.17374C9.15369 8.26299 9.08637 8.34116 9.00548 8.40348C8.92458 8.46579 8.83181 8.51093 8.73286 8.53613C8.6339 8.56133 8.53084 8.56605 8.42999 8.55001C8.23479 8.53055 8.03766 8.55062 7.85038 8.60904C7.6631 8.66746 7.48952 8.76302 7.33999 8.89001C7.18812 9.01252 7.06216 9.16403 6.96945 9.33572C6.87673 9.50741 6.81913 9.69583 6.79999 9.89001C6.77932 10.0866 6.79797 10.2854 6.85488 10.4747C6.91178 10.6641 7.0058 10.8402 7.13144 10.9928C7.25709 11.1455 7.41186 11.2716 7.58673 11.3638C7.76159 11.456 7.95307 11.5125 8.14999 11.53C8.47553 11.5579 8.80144 11.4808 9.07999 11.31C9.24973 11.2053 9.45413 11.1722 9.64824 11.2182C9.84234 11.2641 10.0102 11.3853 10.115 11.555C10.2198 11.7248 10.2528 11.9292 10.2069 12.1233C10.1609 12.3174 10.0397 12.4853 9.86999 12.59C9.40619 12.8858 8.86998 13.0484 8.31999 13.06Z M3 18.5C2.80189 18.4974 2.61263 18.4176 2.47253 18.2775C2.33244 18.1374 2.25259 17.9481 2.25 17.75C2.25 15.05 2.97 13.25 6.5 13.25C6.69891 13.25 6.88968 13.329 7.03033 13.4697C7.17098 13.6103 7.25 13.8011 7.25 14C7.25 14.1989 7.17098 14.3897 7.03033 14.5303C6.88968 14.671 6.69891 14.75 6.5 14.75C4.15 14.75 3.75 15.5 3.75 17.75C3.74741 17.9481 3.66756 18.1374 3.52747 18.2775C3.38737 18.4176 3.19811 18.4974 3 18.5Z"/>
+                                </Viewbox>
+
+                                <!-- Text -->
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Clients]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- New Sale -->
+                        <Button Click="NewSale_Click" Style="{StaticResource MenuBtn}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform"
+                      Data="M17.437 19.934c0 0.552-0.448 1-1 1-0.552 0-1-0.448-1-1 0-0.552 0.448-1 1-1 0.552 0 1 0.448 1 1Zm-11.217-4.266l-0.945-10.9c-0.03-0.391-0.356-0.693-0.749-0.693h-0.966c-0.276 0-0.5-0.224-0.5-0.5s0.224-0.5 0.5-0.5h0.966c0.916 0 1.676 0.704 1.746 1.617l0.139 1.818h13.03c0.885 0 1.577 0.76 1.494 1.638l-0.668 7.52c-0.121 1.285-1.199 2.267-2.489 2.267h-9.069c-1.29 0-2.367-0.981-2.489-2.267Zm0.274-8.158l0.722 8.066c0.073 0.77 0.719 1.359 1.493 1.359h9.069c0.774 0 1.42-0.589 1.493-1.359l0.668-7.518c0.028-0.294-0.203-0.548-0.498-0.548H6.494Zm4.454 12.424c0 0.552-0.448 1-1 1-0.552 0-1-0.448-1-1 0-0.552 0.448-1 1-1 0.552 0 1 0.448 1 1Z"/>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[NewSale]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Products -->
+                        <Button Click="Product_Click" Style="{StaticResource MenuBtn}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform"
+                      Data="M192 0L384 110.851252L384 332.553755L192 443.405007L0 332.553755L0 110.851252L192 0Z M127.999 206.918L128 357.189L170.666667 381.824L170.666667 231.552L127.999 206.918Z M42.6666667 157.653333L42.6666667 307.920144L85.333 332.555L85.333 182.286L42.6666667 157.653333Z M275.991 97.759L150.413 170.595L192 194.605531L317.866667 121.936377L275.991 97.759Z M192 49.267223L66.1333333 121.936377L107.795 145.989L233.374 73.154L192 49.267223Z"/>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Products]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Catalog -->
+                        <StackPanel Margin="0 ,6">
+                            <!-- Catalog -->
+                            <Button Click="Catalog_Click"
+                                Style="{StaticResource MenuBtn}"
+                                Margin="0,2,0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- LEFT ICON -->
+                                    <Viewbox Width="22" Height="22" Margin="0,0,12,0" VerticalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <!-- Lines -->
+                                            <Line X1="8" Y1="6" X2="21" Y2="6" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round"/>
+                                            <Line X1="8" Y1="12" X2="21" Y2="12" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round"/>
+                                            <Line X1="8" Y1="18" X2="21" Y2="18" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round"/>
+
+                                            <!-- Dots -->
+                                            <Ellipse Canvas.Left="3" Canvas.Top="5" Width="2" Height="2" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                            <Ellipse Canvas.Left="3" Canvas.Top="11" Width="2" Height="2" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                            <Ellipse Canvas.Left="3" Canvas.Top="17" Width="2" Height="2" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                        </Canvas>
+                                    </Viewbox>
+
+                                    <!-- TEXT -->
+                                    <TextBlock Grid.Column="1"
+                                       Text="{Binding Strings[Catalog]}"
+                                       VerticalAlignment="Center"
+                                       FontSize="16"/>
+
+                                    <!-- ARROW -->
+                                    <Viewbox Grid.Column="2"
+                                         Width="14"
+                                         Height="14"
+                                         VerticalAlignment="Center"
+                                         Margin="10,0,0,0">
+                                        <Path x:Name="CatalogArrow"
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                              Data="M6 9L12 15L18 9"/>
+                                    </Viewbox>
+
+                                </Grid>
+                            </Button>
+
+
+                            <!-- Submenu Container -->
+                            <Border x:Name="DepartmentsSubmenuContainer" Height="0" ClipToBounds="True" Margin="30 ,0 ,0 ,0">
+                                <StackPanel x:Name="DepartmentsSubmenu">
+                                    <!-- Brands -->
+                                    <Button Click="Brands_Click"
+                                            Style="{StaticResource MenuBtn}"
+                                            Margin="0,2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Icon -->
+                                            <Viewbox Width="20"
+                                                 Height="20"
+                                                 Margin="0,0,12,0"
+                                                 VerticalAlignment="Center">
+                                                <Grid>
+                                                    <!-- Tag shape -->
+                                                    <Path
+                                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Stretch="Uniform"
+                                                        Data="M1 5C1 2.79086 2.79086 1 5 1H9.75736C10.8182 1 11.8356 1.42143 12.5858 2.17157L21.5858 11.1716C23.1479 12.7337 23.1479 15.2663 21.5858 16.8284L16.8284 21.5858C15.2663 23.1479 12.7337 23.1479 11.1716 21.5858L2.17157 12.5858C1.42143 11.8356 1 10.8182 1 9.75736V5ZM5 3C3.89543 3 3 3.89543 3 5V9.75736C3 10.2878 3.21071 10.7965 3.58579 11.1716L12.5858 20.1716C13.3668 20.9526 14.6332 20.9526 15.4142 20.1716L20.1716 15.4142C20.9526 14.6332 20.9526 13.3668 20.1716 12.5858L11.1716 3.58579C10.7965 3.21071 10.2878 3 9.75736 3H5Z"/>
+
+                                                    <!-- Hole -->
+                                                    <Path
+                                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Data="M9 7.5C9 8.32843 8.32843 9 7.5 9C6.67157 9 6 8.32843 6 7.5C6 6.67157 6.67157 6 7.5 6C8.32843 6 9 6.67157 9 7.5Z"/>
+                                                </Grid>
+                                            </Viewbox>
+
+                                            <!-- Text -->
+                                            <TextBlock Grid.Column="1"
+                                               Text="{Binding Strings[Brands]}"
+                                               VerticalAlignment="Center"
+                                               FontSize="16"/>
+                                        </Grid>
+                                    </Button>
+
+                                    <!-- Series -->
+                                    <Button Click="Series_Click"
+                                            Style="{StaticResource MenuBtn}"
+                                            Margin="0,2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Icon -->
+                                            <Viewbox Width="20"
+                                                 Height="20"
+                                                 Margin="0,0,12,0"
+                                                 VerticalAlignment="Center">
+                                                <Path
+                                                    Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                    Stretch="Uniform"
+                                                    Data="M3.05 4.75a.7.7 0 01.7-.7h3.5a.7.7 0 110 1.4h-3.5a.7.7 0 01-.7-.7z
+                                                          M3.75 7.05a.7.7 0 100 1.4h2.5a.7.7 0 100-1.4h-2.5z
+                                                          M0 3.25A2.25 2.25 0 012.25 1h6.5c.883 0 1.648.51 2.016 1.25h.984
+                                                          c.698 0 1.3.409 1.582 1h.918c.966 0 1.75.784 1.75 1.75v6
+                                                          a1.75 1.75 0 01-1.75 1.75h-.918c-.281.591-.884 1-1.582 1
+                                                          h-.984A2.25 2.25 0 018.75 15h-6.5A2.25 2.25 0 010 12.75v-9.5z
+                                                          M13.5 11.25h.75a.25.25 0 00.25-.25V5a.25.25 0 00-.25-.25h-.75v6.5z
+                                                          M11 12.25v-8.5h.75A.25.25 0 0112 4v8a.25.25 0 01-.25.25H11z
+                                                          M2.25 2.5a.75.75 0 00-.75.75v9.5c0 .414.336.75.75.75h6.5
+                                                          a.75.75 0 00.75-.75v-9.5a.75.75 0 00-.75-.75h-6.5z"/>
+                                            </Viewbox>
+
+                                            <!-- Text -->
+                                            <TextBlock Grid.Column="1"
+                                               Text="{Binding Strings[Series]}"
+                                               VerticalAlignment="Center"
+                                               FontSize="16"/>
+                                        </Grid>
+                                    </Button>
+
+                                    <!-- Models -->
+                                    <Button Click="Model_Click" 
+                                            Style="{StaticResource MenuBtn}" 
+                                            Margin="0,2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform"
+                                                        Data="M26 30H42a2 2 0 0 0 2-2V20a2 2 0 0 0-2-2H26a2 2 0 0 0-2 2v2H16V14h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6A2 2 0 0 0 4 4v8a2 2 0 0 0 2 2h6V40a2 2 0 0 0 2 2H24v2a2 2 0 0 0 2 2H42a2 2 0 0 0 2-2V36a2 2 0 0 0-2-2H26a2 2 0 0 0-2 2v2H16V26h8v2a2 2 0 0 0 2 2Z"/>
+                                            </Viewbox>
+                                            <TextBlock Grid.Column="1" Text="{Binding Strings[Models]}" VerticalAlignment="Center" FontSize="16"/>
+                                        </Grid>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- Categories -->
+                        <Button Click="Category_Click" Style="{StaticResource MenuBtn}" >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="22" Height="22" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Canvas Width="48" Height="48">
+                                        <Rectangle Canvas.Left="6" Canvas.Top="28" Width="36" Height="14" RadiusX="4" RadiusY="4" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="4"/>
+                                        <Path Data="M20 7 H10 C7.8 7 6 8.8 6 11 V17 C6 19.2 7.8 21 10 21 H20" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent"/>
+                                        <Ellipse Canvas.Left="26" Canvas.Top="6" Width="16" Height="16" Fill="#2F88FF" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="4"/>
+                                        <Ellipse Canvas.Left="31" Canvas.Top="11" Width="6" Height="6" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                    </Canvas>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Categories]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Models -->
+                        <Button Click="Department_Click" Style="{StaticResource MenuBtn}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- ICON -->
+                                <Viewbox Width="22" Height="22" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Canvas Width="24" Height="24">
+                                        <Rectangle Canvas.Left="2" Canvas.Top="2" Width="9" Height="9" RadiusX="2" RadiusY="2"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2"/>
+                                                                <Rectangle Canvas.Left="13" Canvas.Top="2" Width="9" Height="9" RadiusX="2" RadiusY="2"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2"/>
+                                                                <Rectangle Canvas.Left="2" Canvas.Top="13" Width="9" Height="9" RadiusX="2" RadiusY="2"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2"/>
+                                                                <Rectangle Canvas.Left="13" Canvas.Top="13" Width="9" Height="9" RadiusX="2" RadiusY="2"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2"/>
+                                    </Canvas>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Departments]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Warehouses -->
+                        <Button Style="{StaticResource MenuBtn}" Click="Warehouse_Click">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform"
+                      Data="M13.5,5c-0.0762,0.0003-0.1514-0.0168-0.22-0.05L7.5,2L1.72,4.93 C1.4632,5.0515,1.1565,4.9418,1.035,4.685 S1.0232,4.1215,1.28,4 L7.5,0.92L13.72,4 c0.2761,0.0608,0.4508,0.3339,0.39,0.61 C14.0492,4.8861,13.7761,5.0608,13.5,5z M5,10H2v3h3V10z M9,10H6v3h3V10z M13,10h-3v3h3V10z M11,6H8v3h3V6z M7,6H4v3h3V6z"/>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Warehouses]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Settings -->
+                        <Button Style="{StaticResource MenuBtn}" Click="Setting_Click">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <Canvas Width="24" Height="24">
+                                        <Ellipse Canvas.Left="9" Canvas.Top="9" Width="6" Height="6" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Fill="Transparent"/>
+                                        <Path Data="M13.7654 2.15224C13.3978 2 12.9319 2 12 2C11.0681 2 10.6022 2 10.2346 2.15224C9.74457 2.35523 9.35522 2.74458 9.15223 3.23463C9.05957 3.45834 9.0233 3.7185 9.00911 4.09799C8.98826 4.65568 8.70226 5.17189 8.21894 5.45093C7.73564 5.72996 7.14559 5.71954 6.65219 5.45876C6.31645 5.2813 6.07301 5.18262 5.83294 5.15102C5.30704 5.08178 4.77518 5.22429 4.35436 5.5472C4.03874 5.78938 3.80577 6.1929 3.33983 6.99993C2.87389 7.80697 2.64092 8.21048 2.58899 8.60491C2.51976 9.1308 2.66227 9.66266 2.98518 10.0835C3.13256 10.2756 3.3397 10.437 3.66119 10.639C4.1338 10.936 4.43789 11.4419 4.43786 12C4.43783 12.5581 4.13375 13.0639 3.66118 13.3608C3.33965 13.5629 3.13248 13.7244 2.98508 13.9165C2.66217 14.3373 2.51966 14.8691 2.5889 15.395C2.64082 15.7894 2.87379 16.193 3.33973 17C3.80568 17.807 4.03865 18.2106 4.35426 18.4527C4.77508 18.7756 5.30694 18.9181 5.83284 18.8489C6.07289 18.8173 6.31632 18.7186 6.65204 18.5412C7.14547 18.2804 7.73556 18.27 8.2189 18.549C8.70224 18.8281 8.98826 19.3443 9.00911 19.9021C9.02331 20.2815 9.05957 20.5417 9.15223 20.7654C9.35522 21.2554 9.74457 21.6448 10.2346 21.8478C10.6022 22 11.0681 22 12 22C12.9319 22 13.3978 22 13.7654 21.8478C14.2554 21.6448 14.6448 21.2554 14.8477 20.7654C14.9404 20.5417 14.9767 20.2815 14.9909 19.902C15.0117 19.3443 15.2977 18.8281 15.781 18.549C16.2643 18.2699 16.8544 18.2804 17.3479 18.5412C17.6836 18.7186 17.927 18.8172 18.167 18.8488C18.6929 18.9181 19.2248 18.7756 19.6456 18.4527C19.9612 18.2105 20.1942 17.807 20.6601 16.9999C21.1261 16.1929 21.3591 15.7894 21.411 15.395C21.4802 14.8691 21.3377 14.3372 21.0148 13.9164C20.8674 13.7243 20.6602 13.5628 20.3387 13.3608C19.8662 13.0639 19.5621 12.558 19.5621 11.9999C19.5621 11.4418 19.8662 10.9361 20.3387 10.6392C20.6603 10.4371 20.8675 10.2757 21.0149 10.0835C21.3378 9.66273 21.4803 9.13087 21.4111 8.60497C21.3592 8.21055 21.1262 7.80697 20.6602 6.99993C20.1942 6.19289 19.9613 5.78938 19.6456 5.5472C19.2248 5.22429 18.6929 5.08178 18.167 5.15102C17.927 5.18262 17.6836 5.2813 17.3479 5.45876C16.8544 5.71954 16.2643 5.72996 15.781 5.45093C15.2977 5.17189 15.0117 4.65568 14.9909 4.09799C14.9767 3.7185 14.9404 3.45834 14.8477 3.23463C14.6448 2.74458 14.2554 2.35523 13.7654 2.15224Z" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" Fill="Transparent"/>
+                                    </Canvas>
+                                </Viewbox>
+                                <TextBlock Grid.Column="1" Text="{Binding Strings[Settings]}" VerticalAlignment="Center" FontSize="16"/>
+                            </Grid>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Profile Section -->
+                <!-- Profile Section at the Bottom -->
+                <Border x:Name="ProfileBorder" MouseEnter="ProfileBorder_MouseEnter"
+        MouseLeave="ProfileBorder_MouseLeave"  Style="{StaticResource ProfileBorderStyle}" MouseLeftButtonUp="ProfileBorder_Click" VerticalAlignment="Bottom" Background="#4A4A4A" Height="60" Margin="10,0,10,10" CornerRadius="8"  Grid.Row="2" Cursor="Hand">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Profile Icon -->
+                        <Viewbox x:Name="ProfileIcon" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Left">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="#F5F5F5"
+                              Data="M16.5 7.063C16.5 10.258 14.57 13 12 13c-2.572 0-4.5-2.742-4.5-5.938C7.5 3.868 9.16 2 12 2s4.5 1.867 4.5 5.063zM4.102 20.142C4.487 20.6 6.145 22 12 22c5.855 0 7.512-1.4 7.898-1.857a.416.416 0 0 0 .09-.317C19.9 18.944 19.106 15 12 15s-7.9 3.944-7.989 4.826a.416.416 0 0 0 .091.317z"/>
+                            </Canvas>
+                        </Viewbox>
+
+                        <!-- Profile Info -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0" x:Name="ProfileTextStack">
+                            <TextBlock x:Name="ProfileName" Text="Ismail Benrahhal" Foreground="#F5F5F5" FontWeight="Bold"/>
+                            <TextBlock x:Name="ProfileRole" Text="Admin" Foreground="#F5F5F5" FontSize="12"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- MAIN CONTENT -->
+        <Grid x:Name="MainContent"  Margin="280,0,0,0" Background="#F5F5F5">
+            <TextBlock x:Name="MainTitle" Text="Main Content Area"
+                       FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="#333"/>
+        </Grid>
+    
+    
+    </Grid>
+</Window>
