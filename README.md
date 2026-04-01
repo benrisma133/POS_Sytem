@@ -111,16 +111,16 @@ The system supports full CRUD operations for:
 ## 📸 Screenshots
 
 ### 🗂️ Categories
-![Categories](screenshots/categories.png)
+![Categories](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/categories.png?raw=true)
 
 ### 🧩 Models
-![Models](screenshots/models.png)
+![Models](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/models.png?raw=true)
 
 ### 📦 Products
-![Products](screenshots/products.png)
+![Products](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/products.png?raw=true)
 
 ### 🏬 Warehouses
-![Warehouses](screenshots/warehouses.png)
+![Warehouses](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/warehouses.png?raw=true)
 
 
 ---
