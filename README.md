@@ -111,7 +111,7 @@ The system supports full CRUD operations for:
 ## 📸 Screenshots
 
 ### 🗂️ Categories
-![Categories](https://raw.githubusercontent.com/benrisma133/POS_Sytem/main/screenshots/categories.png)
+![Categories](screenshots/categories.png)
 
 ### 🧩 Models
 ![Models](screenshots/models.png)
