@@ -241,18 +241,15 @@
       <DependentUpon>TextArea.xaml</DependentUpon>
     </Compile>
     <Compile Include="DebugLoggerProvider.cs" />
-    <Compile Include="frmTest.xaml.cs">
-      <DependentUpon>frmTest.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\UIHelper.cs" />
-    <Compile Include="LanguageManager.cs" />
+    <Compile Include="LanguageSettings\LanguageManager.cs" />
     <Compile Include="Localization\AppResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Localized.cs" />
+    <Compile Include="LanguageSettings\Localized.cs" />
     <Compile Include="ModernPasswordInputDemo.xaml.cs">
       <DependentUpon>ModernPasswordInputDemo.xaml</DependentUpon>
     </Compile>
@@ -284,8 +281,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="TestSidebarWindow.xaml.cs">
-      <DependentUpon>TestSidebarWindow.xaml</DependentUpon>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\CardButtonsFactory.cs" />
     <Compile Include="WindowTest.xaml.cs">
@@ -323,10 +320,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="frmTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ModernPasswordInputDemo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -363,20 +356,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Warehouse\frmAddEditWarehouse.xaml.cs">
       <DependentUpon>frmAddEditWarehouse.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
     <Page Include="Pages\ProductPage.xaml">
       <SubType>Designer</SubType>
@@ -386,7 +371,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestSidebarWindow.xaml">
+    <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
