@@ -263,41 +263,6 @@ namespace POS_WPF.Category
                 .ToList();
         }
 
-        private Viewbox CreateIconViewboxFromJson(string iconJson)
-        {
-            Canvas iconCanvas = new Canvas
-            {
-                Width = 24,
-                Height = 24
-            };
-
-            JArray paths = JArray.Parse(iconJson);
-
-            foreach (var token in paths)
-            {
-                string pathData = token.ToString();
-                if (string.IsNullOrWhiteSpace(pathData)) continue;
-
-                Path path = new Path
-                {
-                    Data = Geometry.Parse(pathData),
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 1,
-                    StrokeStartLineCap = PenLineCap.Round,
-                    StrokeEndLineCap = PenLineCap.Round,
-                    StrokeLineJoin = PenLineJoin.Round
-                };
-
-                iconCanvas.Children.Add(path);
-            }
-
-            return new Viewbox
-            {
-                Width = 32,
-                Height = 32,
-                Child = iconCanvas
-            };
-        }
 
         // Helper method to create icon canvas from JSON data
         private Canvas CreateIconCanvasFromJson(string iconJson)
@@ -437,6 +402,8 @@ namespace POS_WPF.Category
                 txtbTitle.Text = "Edit Category";
             }
         }
+
+
         private readonly ILogger _logger = AppLogger.CreateLogger<frmAddEditCategory>();
 
         private bool ProcessFormData()
@@ -504,7 +471,7 @@ namespace POS_WPF.Category
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error saving category: {CategoryName}", _Category.Name);
+                _logger.LogError(ex, $"Unexpected error saving category: {CategoryName}", _Category.Name);
                 MessageBox.Show(
                     "حدث خطأ غير متوقع أثناء حفظ التصنيف. المرجو الاتصال بالدعم.",
                     "Error",
@@ -947,11 +914,6 @@ namespace POS_WPF.Category
             }
 
             return result;
-        }
-
-        private bool CategoryExist(string Category)
-        {
-            return clsCategory.IsCategoryExistByName(Category);
         }
 
         private void ShowErrorMessage(List<string> errors)

@@ -215,6 +215,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppLogger.cs" />
+    <Compile Include="Brand\frmAddEditBrand.xaml.cs">
+      <DependentUpon>frmAddEditBrand.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Category\frmAddEditCategory.xaml.cs">
       <DependentUpon>frmAddEditCategory.xaml</DependentUpon>
     </Compile>
@@ -238,6 +241,9 @@
       <DependentUpon>TextArea.xaml</DependentUpon>
     </Compile>
     <Compile Include="DebugLoggerProvider.cs" />
+    <Compile Include="frmTest.xaml.cs">
+      <DependentUpon>frmTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\UIHelper.cs" />
     <Compile Include="LanguageManager.cs" />
@@ -282,6 +288,10 @@
     <Compile Include="WindowTest.xaml.cs">
       <DependentUpon>WindowTest.xaml</DependentUpon>
     </Compile>
+    <Page Include="Brand\frmAddEditBrand.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Category\frmAddEditCategory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -309,6 +319,10 @@
     <Page Include="Controls\TextArea.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="frmTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ModernPasswordInputDemo.xaml">
       <SubType>Designer</SubType>

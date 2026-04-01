@@ -135,11 +135,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessException.cs" />
+    <Compile Include="clsBrand.cs" />
     <Compile Include="clsCategory.cs" />
     <Compile Include="clsCategoryIcon.cs" />
     <Compile Include="clsDepartment.cs" />
     <Compile Include="clsModel.cs" />
     <Compile Include="clsProduct.cs" />
+    <Compile Include="clsSerie.cs" />
     <Compile Include="clsStock.cs" />
     <Compile Include="clsWareHouse.cs" />
     <Compile Include="clsDataAccessSettigs.cs" />

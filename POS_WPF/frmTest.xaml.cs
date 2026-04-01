@@ -1,5 +1,4 @@
-﻿using POS_DAL;
-using POS_WPF.Controls;
+﻿using POS_WPF.Brand;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +16,20 @@ using System.Windows.Shapes;
 namespace POS_WPF
 {
     /// <summary>
-    /// Interaction logic for WindowTest.xaml
+    /// Interaction logic for frmTest.xaml
     /// </summary>
-    public partial class WindowTest : Window
+    public partial class frmTest : Window
     {
-        public WindowTest()
+        public frmTest()
         {
             InitializeComponent();
+        }
 
-            var card = new ProductCard();
-            card.LoadProduct(5, 1); // Example: productID=1, warehouseID=1
-            //MainGrid.Children.Add(card); // Assuming your Grid is named MainGrid
-            string cs = clsDataAccessSettigs.ConnectionString;
-            MessageBox.Show(cs);
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditBrand updateBrand = new frmAddEditBrand(6);
+            updateBrand.ShowDialog();
+
         }
     }
 }
