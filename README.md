@@ -130,11 +130,7 @@ The system supports full CRUD operations for:
 ## 🎥 Videos
 
 ### 🍔 Responsive Menu & Main Content
-<video controls width="600">
-  <source src="https://github.com/benrisma133/POS_Sytem/blob/main/videos/menu_and_main_content.mp4?raw=true" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
+![Menu and Main Content](https://raw.githubusercontent.com/benrisma133/POS_Sytem/main/videos/menu_and_main_content.gif)
 ---
 
 ## ▶️ How to Run
