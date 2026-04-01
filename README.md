@@ -111,16 +111,16 @@ The system supports full CRUD operations for:
 ## 📸 Screenshots
 
 ### 🗂️ Categories
-![Categories](screenshots/categories2.png)
+![Categories](screenshots/categories.png)
 
 ### 🧩 Models
-![Models](screenshots/models2.png)
+![Models](screenshots/models.png)
 
 ### 📦 Products
-![Products](screenshots/products2.png)
+![Products](screenshots/products.png)
 
 ### 🏬 Warehouses
-![Warehouses](screenshots/warehouses2.png)
+![Warehouses](screenshots/warehouses.png)
 
 ---
 
