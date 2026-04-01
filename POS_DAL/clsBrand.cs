@@ -262,5 +262,58 @@ namespace POS_DAL
 
             return brandIDs;
         }
+
+        // ============================
+        // GET ALL BRANDs BY WAREHOUSE ID
+        // ============================
+        public static DataTable GetByWarehouseID(int warehouseID)
+        {
+            try
+            {
+                using (SqliteConnection connection = DbHelper.OpenConnection())
+                {
+                    using (SqliteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    SELECT 
+                        b.BrandID,
+                        b.Name,
+                        b.Description
+                    FROM Brands b
+                    INNER JOIN WarehouseBrands wb
+                        ON b.BrandID = wb.BrandID
+                    WHERE wb.WarehouseID = @WarehouseID;
+                ";
+
+                        command.Parameters.AddWithValue("@WarehouseID", warehouseID);
+
+                        using (SqliteDataReader reader = command.ExecuteReader())
+                        {
+                            DataTable dt = new DataTable();
+
+                            // Add columns manually
+                            dt.Columns.Add("BrandID", typeof(int));
+                            dt.Columns.Add("Name", typeof(string));
+                            dt.Columns.Add("Description", typeof(string));
+
+                            while (reader.Read())
+                            {
+                                dt.Rows.Add(
+                                    reader.GetInt32(0),
+                                    reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    reader.IsDBNull(2) ? null : reader.GetString(2)
+                                );
+                            }
+
+                            return dt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in GetByWarehouseID Brands: " + ex.Message);
+            }
+        }
     }
 }

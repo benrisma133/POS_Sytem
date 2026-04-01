@@ -38,8 +38,6 @@ namespace POS_WPF.Pages
             InitializeComponent();
             this.Loaded += UserControl_Loaded;
             this.SizeChanged += UserControl_SizeChanged;
-
-
         }
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)

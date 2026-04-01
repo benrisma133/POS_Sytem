@@ -103,5 +103,10 @@ namespace POS_BLL
         {
             return clsBrandsData.IsBrandExistByName(name, ignoreBrandID);
         }
+
+        public static DataTable GetByWarehouseID(int warehouseID)
+        {
+            return clsBrandsData.GetByWarehouseID(warehouseID);
+        }
     }
 }
