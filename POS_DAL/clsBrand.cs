@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace POS_DAL
 {
@@ -315,5 +316,155 @@ namespace POS_DAL
                 throw new Exception("Error in GetByWarehouseID Brands: " + ex.Message);
             }
         }
+
+        // ============================
+        // ADD BRAND TO WAREHOUSES
+        // ============================
+        public static void AddBrandToWarehouses(int brandID, List<int> warehouseIDs)
+        {
+            try
+            {
+                using (SqliteConnection connection = DbHelper.OpenConnection())
+                {
+                    foreach (int warehouseID in warehouseIDs)
+                    {
+                        using (SqliteCommand command = connection.CreateCommand())
+                        {
+                            command.CommandText = @"
+                        INSERT INTO WarehouseBrands (WarehouseID, BrandID)
+                        VALUES (@WarehouseID, @BrandID);
+                    ";
+
+                            command.Parameters.AddWithValue("@WarehouseID", warehouseID);
+                            command.Parameters.AddWithValue("@BrandID", brandID);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in AddBrandToWarehouses: " + ex.Message);
+            }
+        }
+
+        // ============================
+        // ADD BRAND TO ALL WAREHOUSES
+        // ============================
+        public static void AddBrandToAllWarehouses(int brandID)
+        {
+            try
+            {
+                List<int> warehouseIDs = clsWareHouseData.GetAllWarehouseIDs();
+                AddBrandToWarehouses(brandID, warehouseIDs);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in AddBrandToAllWarehouses: " + ex.Message);
+            }
+        }
+
+        // ============================
+        // UPDATE BRAND WAREHOUSES (DELETE OLD AND ADD NEW)
+        // ============================
+        public static void UpdateBrandWarehouses(int brandID, List<int> warehouseIDs)
+        {
+            using (var connection = new SqliteConnection(clsDataAccessSettigs.ConnectionString))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        // Delete old relations
+                        using (var deleteCmd = connection.CreateCommand())
+                        {
+                            deleteCmd.Transaction = transaction;
+                            deleteCmd.CommandText = @"
+                        DELETE FROM WarehouseBrands
+                        WHERE BrandID = @BrandID;
+                    ";
+                            deleteCmd.Parameters.AddWithValue("@BrandID", brandID);
+                            deleteCmd.ExecuteNonQuery();
+                        }
+
+                        // Insert new (ignore duplicates)
+                        foreach (int warehouseID in warehouseIDs.Distinct())
+                        {
+                            using (var insertCmd = connection.CreateCommand())
+                            {
+                                insertCmd.Transaction = transaction;
+                                insertCmd.CommandText = @"
+                                                            INSERT OR IGNORE INTO WarehouseBrands (WarehouseID, BrandID)
+                                                            VALUES (@WarehouseID, @BrandID);
+                                                        ";
+                                insertCmd.Parameters.AddWithValue("@WarehouseID", warehouseID);
+                                insertCmd.Parameters.AddWithValue("@BrandID", brandID);
+                                insertCmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("Error updating Brand warehouses: " + ex.Message, ex);
+                    }
+                }
+            }
+        }
+
+        // ============================
+        // UPDATE BRAND TO ALL WAREHOUSES
+        // ============================
+        public static void UpdateBrandToAllWarehouses(int brandID)
+        {
+            try
+            {
+                List<int> warehouseIDs = clsWareHouseData.GetAllWarehouseIDs();
+                UpdateBrandWarehouses(brandID, warehouseIDs);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in UpdateBrandToAllWarehouses: " + ex.Message);
+            }
+        }
+
+        public static List<int> GetWarehouseIDsByBrandID(int brandID)
+        {
+            List<int> ids = new List<int>();
+
+            try
+            {
+                using (SqliteConnection connection = DbHelper.OpenConnection())
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT WarehouseID
+                FROM WarehouseBrands
+                WHERE BrandID = @BrandID;
+            ";
+
+                    command.Parameters.AddWithValue("@BrandID", brandID);
+
+                    using (SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ids.Add(Convert.ToInt32(reader["WarehouseID"]));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in GetWarehouseIDsByBrandID: " + ex.Message);
+            }
+
+            return ids;
+        }
+
     }
 }

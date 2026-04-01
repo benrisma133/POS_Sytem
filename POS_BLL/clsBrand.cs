@@ -108,5 +108,45 @@ namespace POS_BLL
         {
             return clsBrandsData.GetByWarehouseID(warehouseID);
         }
+
+        public bool AssignToWarehouses(List<int> warehouseIDs)
+        {
+            if (this.BrandID == -1) throw new Exception("Brand must be saved first.");
+            try
+            {
+                clsBrandsData.AddBrandToWarehouses(this.BrandID, warehouseIDs);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateWarehouses(List<int> warehouseIDs)
+        {
+            if (BrandID == -1)
+                throw new Exception("Brand must be saved first.");
+
+            try
+            {
+                clsBrandsData.UpdateBrandWarehouses(BrandID, warehouseIDs);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public List<int> GetAssignedWarehouseIDs()
+        {
+            if (this.BrandID == -1)
+                return new List<int>();
+
+            return clsBrandsData.GetWarehouseIDsByBrandID(this.BrandID);
+        }
+
+
     }
 }

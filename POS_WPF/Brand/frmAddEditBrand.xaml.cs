@@ -5,6 +5,7 @@ using POS_WPF.Controls;
 using POS_WPF.Pages;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,10 @@ namespace POS_WPF.Brand
         int _BrandID;
         clsBrand _Brand;
 
+        private List<int> _selectedWarehouseIDs = new List<int>();
+
+        private bool _isLoadingWarehouses = false;
+
         public frmAddEditBrand()
         {
             InitializeComponent();
@@ -60,15 +65,89 @@ namespace POS_WPF.Brand
                 this.DragMove();
         }
 
+        private void LoadWarehousesToListBox()
+        {
+            try
+            {
+                DataTable dt = clsWareHouse.GetAll(); // BLL method
+
+                lstWarehouses.Items.Clear();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    ListBoxItem item = new ListBoxItem
+                    {
+                        Content = row["Name"].ToString(),
+                        Tag = Convert.ToInt32(row["WarehouseID"])
+                    };
+
+                    lstWarehouses.Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Error loading warehouses:\n" + ex.Message,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadSelectedWarehouses()
+        {
+            _isLoadingWarehouses = true;
+
+            var ids = _Brand.GetAssignedWarehouseIDs();
+
+            foreach (ListBoxItem item in lstWarehouses.Items)
+                item.IsSelected = ids.Contains((int)item.Tag);
+
+            _isLoadingWarehouses = false;
+
+            int total = lstWarehouses.Items.Count;
+            int selected = lstWarehouses.SelectedItems.Count;
+
+            if (selected == total && total > 0)
+            {
+                cmbWarehouseFilter.SelectedIndex = 0;
+                grdSelectWarehouses.Visibility = Visibility.Collapsed;
+                txtSelectedWarehouses.Text = "All Warehouses selected";
+            }
+            else
+            {
+                cmbWarehouseFilter.SelectedIndex = 1;
+                grdSelectWarehouses.Visibility = Visibility.Visible;
+                txtSelectedWarehouses.Text =
+                    selected == 0
+                        ? "No warehouse selected"
+                        : $"{selected} warehouse(s) selected";
+            }
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _ResetDefaultValues();
 
+            LoadWarehousesToListBox();
+
             _isLoadingForm = true;
+            _isLoadingWarehouses = true;
 
-            if(FormMode == enMode.Update)
+            if (FormMode == enMode.AddNew)
+            {
+                // ADD: start with All
+                cmbWarehouseFilter.SelectedIndex = 0;
+                grdSelectWarehouses.Visibility = Visibility.Collapsed;
+                txtSelectedWarehouses.Text = "All Warehouses selected";
+            }
+            else
+            {
+                // UPDATE: load actual selection
                 _LoadData();
+            }
 
+            _isLoadingWarehouses = false;
             _isLoadingForm = false;
 
         }
@@ -134,6 +213,8 @@ namespace POS_WPF.Brand
 
             BrandName.Text = _Brand.Name;
             BrandDescription.Text = _Brand.Description;
+
+            LoadSelectedWarehouses();
         }
 
         void _ResetDefaultValues()
@@ -152,19 +233,20 @@ namespace POS_WPF.Brand
             }
         }
 
-        bool ProcessFormData()
+        private bool ProcessFormData()
         {
+            // Collect form data
             _Brand.Name = BrandName.Text.Trim();
             _Brand.Description = BrandDescription.Text;
 
+            // Try to save brand
             try
             {
-                bool isBrandSaved = _Brand.Save();
-                if (!isBrandSaved)
+                if (!_Brand.Save())
                 {
-                    _logger.LogWarning($"Failed to save category: {BrandName}", _Brand.Name);
+                    _logger.LogWarning("Failed to save brand: {BrandName}", _Brand.Name);
                     MessageBox.Show(
-                        "Failed to save category: " + _Brand.Name,
+                        "Failed to save brand: " + _Brand.Name,
                         "Error",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error
@@ -172,22 +254,53 @@ namespace POS_WPF.Brand
                     return false;
                 }
 
-                IsSaved = true;
+                // Optional: handle warehouse assignment
+                List<int> warehouseIDsToUse = (cmbWarehouseFilter.SelectedIndex == 0)
+                    ? clsWareHouse.GetAllWarehouseIDs()
+                    : _selectedWarehouseIDs;
 
+                if (FormMode == enMode.AddNew)
+                {
+                    if (warehouseIDsToUse.Count > 0 &&
+                        !_Brand.AssignToWarehouses(warehouseIDsToUse))
+                    {
+                        MessageBox.Show(
+                            "Brand saved but failed to assign warehouses.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning
+                        );
+                    }
+
+
+                    IsSaved = true;
+                }
+                else if (FormMode == enMode.Update)
+                {
+                    if (!_Brand.UpdateWarehouses(warehouseIDsToUse))
+                    {
+                        MessageBox.Show(
+                            "Brand updated but failed to update warehouses.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning
+                        );
+                    }
+                }
+
+                return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unexpected error saving category: {BrandName}", _Brand.Name);
+                _logger.LogError(ex, $"Unexpected error saving brand: {BrandName}", _Brand.Name);
                 MessageBox.Show(
-                    "حدث خطأ غير متوقع أثناء حفظ التصنيف. المرجو الاتصال بالدعم.",
+                    "حدث خطأ غير متوقع أثناء حفظ العلامة التجارية. المرجو الاتصال بالدعم.",
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
                 return false;
             }
-
-            return true;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -213,6 +326,96 @@ namespace POS_WPF.Brand
 
             }
         }
+
+        private void cmbWarehouseFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoadingWarehouses) return;
+            if (lstWarehouses == null) return;
+
+            grdSelectWarehouses.Visibility =
+                cmbWarehouseFilter.SelectedIndex == 0
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+
+            // -------- ADD MODE ONLY --------
+            if (FormMode == enMode.AddNew)
+            {
+                _isLoadingWarehouses = true;
+
+                if (cmbWarehouseFilter.SelectedIndex == 0) // All
+                {
+                    foreach (ListBoxItem i in lstWarehouses.Items)
+                        i.IsSelected = true;
+
+                    txtSelectedWarehouses.Text = "All Warehouses selected";
+                }
+                else // Select Warehouses
+                {
+                    foreach (ListBoxItem i in lstWarehouses.Items)
+                        i.IsSelected = false;
+
+                    txtSelectedWarehouses.Text = "No warehouse selected";
+                }
+
+                _isLoadingWarehouses = false;
+            }
+
+            // -------- UPDATE MODE --------
+            if (FormMode == enMode.Update)
+            {
+                int totalCount = lstWarehouses.Items.Count;
+                int selectedCount = lstWarehouses.SelectedItems.Count;
+
+                if (selectedCount == totalCount && totalCount > 0)
+                {
+                    txtSelectedWarehouses.Text = "All Warehouses selected";
+                }
+                else if (selectedCount == 0)
+                {
+                    txtSelectedWarehouses.Text = "No warehouse selected";
+                }
+                else if (cmbWarehouseFilter.SelectedIndex == 0)
+                {
+                    foreach (ListBoxItem i in lstWarehouses.Items)
+                        i.IsSelected = true;
+
+                    txtSelectedWarehouses.Text = "All Warehouses selected";
+                }
+                else
+                {
+                    txtSelectedWarehouses.Text = $"{selectedCount} warehouse(s) selected";
+                }
+
+            }
+
+        }
+
+        private void lstWarehouses_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoadingWarehouses) return;
+
+            int total = lstWarehouses.Items.Count;
+            int selected = lstWarehouses.SelectedItems.Count;
+
+            if (selected == 0)
+            {
+                txtSelectedWarehouses.Text = "No warehouse selected";
+            }
+            else if (selected == total)
+            {
+                txtSelectedWarehouses.Text = "All Warehouses selected";
+            }
+            else
+            {
+                txtSelectedWarehouses.Text = $"{selected} warehouse(s) selected";
+            }
+
+            _selectedWarehouseIDs = lstWarehouses.SelectedItems
+                .Cast<ListBoxItem>()
+                .Select(i => (int)i.Tag)
+                .ToList();
+        }
+
 
         private ValidationResult ValidateAllFields()
         {
