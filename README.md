@@ -110,7 +110,17 @@ The system supports full CRUD operations for:
 
 ## 📸 Screenshots
 
-*(Add screenshots of your application here)*
+### 🗂️ Categories
+![Categories](screenshots/categories.png)
+
+### 🧩 Models
+![Models](screenshots/models.png)
+
+### 📦 Products
+![Products](screenshots/products.png)
+
+### 🏬 Warehouses
+![Warehouses](screenshots/warehouses.png)
 
 ---
 
@@ -119,7 +129,7 @@ The system supports full CRUD operations for:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/benrisma133/POS_Sytem.git
    ```
 
 2. Open the project in Visual Studio
