@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using POS_BLL;
+using POS_WPF.Brand;
 using POS_WPF.Controls;
 using POS_WPF.Pages;
 using System;
@@ -539,6 +540,13 @@ namespace POS_WPF.Serie
             public bool IsValid { get; set; }
             public List<string> Errors { get; set; }
             public FrameworkElement FirstInvalidControl { get; set; }
+        }
+
+        private void btnManageWarehouses_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditBrand frmAdd = new frmAddEditBrand();
+            frmAdd.ShowDialog();
+            LoadBrandsToComboBox();
         }
     }
 }

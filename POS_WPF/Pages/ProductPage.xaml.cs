@@ -660,7 +660,7 @@ namespace POS_WPF.Pages
                 else if (count == 2)
                     card.Width = (availableWidth / 2) - 16;
                 else
-                    card.Width = availableWidth > 960
+                    card.Width = availableWidth > 820
                         ? (availableWidth / 2) - 16
                         : availableWidth - 16;
             }
