@@ -262,6 +262,9 @@
     <Compile Include="Pages\ModelPage.xaml.cs">
       <DependentUpon>ModelPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SeriePage.xaml.cs">
+      <DependentUpon>SeriePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
@@ -275,6 +278,9 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Serie\frmAddEditSerie.xaml.cs">
+      <DependentUpon>frmAddEditSerie.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -336,6 +342,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\SeriePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -345,6 +355,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Models\frmAddEditModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Serie\frmAddEditSerie.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

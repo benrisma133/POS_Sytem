@@ -1,5 +1,6 @@
 ﻿using POS_DAL;
 using POS_WPF.Controls;
+using POS_WPF.Serie;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,12 @@ namespace POS_WPF
             //MainGrid.Children.Add(card); // Assuming your Grid is named MainGrid
             string cs = clsDataAccessSettigs.ConnectionString;
             MessageBox.Show(cs);
+        }
+
+        private void ShowGalleryButton_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditSerie frm = new frmAddEditSerie(8);
+            frm.ShowDialog();
         }
     }
 }

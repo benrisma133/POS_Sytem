@@ -111,5 +111,62 @@ namespace POS_BLL
         {
             return clsSeriesData.IsSeriesExistByName(name, ignoreSeriesID);
         }
+
+        // ============================
+        // GET SERIES BY WAREHOUSE
+        // ============================
+        public static DataTable GetByWarehouseID(int warehouseID)
+        {
+            return clsSeriesData.GetByWarehouseID(warehouseID);
+        }
+
+        // ============================
+        // ASSIGN SERIES TO WAREHOUSES
+        // ============================
+        public bool AssignToWarehouses(List<int> warehouseIDs)
+        {
+            if (this.SeriesID == -1)
+                throw new Exception("Series must be saved first.");
+
+            try
+            {
+                clsSeriesData.AddSeriesToWarehouses(this.SeriesID, warehouseIDs);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ============================
+        // UPDATE SERIES WAREHOUSES
+        // ============================
+        public bool UpdateWarehouses(List<int> warehouseIDs)
+        {
+            if (this.SeriesID == -1)
+                throw new Exception("Series must be saved first.");
+
+            try
+            {
+                clsSeriesData.UpdateSeriesWarehouses(this.SeriesID, warehouseIDs);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ============================
+        // GET ASSIGNED WAREHOUSES
+        // ============================
+        public List<int> GetAssignedWarehouseIDs()
+        {
+            if (this.SeriesID == -1)
+                return new List<int>();
+
+            return clsSeriesData.GetWarehouseIDsBySeriesID(this.SeriesID);
+        }
     }
 }

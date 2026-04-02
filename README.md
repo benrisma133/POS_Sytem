@@ -122,10 +122,11 @@ The system supports full CRUD operations for:
 ### 📦 Products
 ![Products](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/products.png?raw=true)
 
+### 📊 Series
+![Series](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/series.png?raw=true)
+
 ### 🏬 Warehouses
 ![Warehouses](https://github.com/benrisma133/POS_Sytem/blob/main/screenshots/warehouses.png?raw=true)
-
----
 
 ---
 
