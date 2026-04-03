@@ -14,6 +14,9 @@ namespace POS_BLL
         public string Name { get; set; }
         public string Description { get; set; }
 
+        public int? SerieID { get; set; } // Optional: if you want to link model to a serie
+        clsSeries SerieInfo { get; set; } // Optional: if you want to link model to a serie
+
         // ============================
         // Constructor for new model
         // ============================
@@ -23,17 +26,20 @@ namespace POS_BLL
             ModelID = -1;
             Name = "";
             Description = "";
+            SerieID = -1;
         }
 
         // ============================
         // Private constructor for loading existing model
         // ============================
-        private clsModel(int modelID, string name, string description)
+        private clsModel(int modelID, string name, string description ,int? serieID)
         {
             _Mode = enMode.Update;
             ModelID = modelID;
             Name = name;
             Description = description;
+            SerieID = serieID;
+            SerieInfo = clsSeries.FindByID(serieID ?? -1); // Load serie info if needed
         }
 
         // ============================
@@ -43,9 +49,10 @@ namespace POS_BLL
         {
             string name = "";
             string description = "";
+            int? serieID = -1;
 
-            if (clsModelData.GetByID(modelID, ref name, ref description))
-                return new clsModel(modelID, name, description);
+            if (clsModelData.GetByID(modelID, ref name, ref description ,ref serieID))
+                return new clsModel(modelID, name, description ,serieID);
 
             return null;
         }
@@ -57,9 +64,10 @@ namespace POS_BLL
         {
             int modelID = -1;
             string description = "";
+            int? serieID = -1;
 
-            if (clsModelData.GetByName(name, ref modelID, ref description))
-                return new clsModel(modelID, name, description);
+            if (clsModelData.GetByName(name, ref modelID, ref description ,ref serieID))
+                return new clsModel(modelID, name, description , serieID);
 
             return null;
         }
@@ -69,7 +77,7 @@ namespace POS_BLL
         // ============================
         bool _AddNew()
         {
-            this.ModelID = clsModelData.AddNew(this.Name, this.Description);
+            this.ModelID = clsModelData.AddNew(this.Name, this.Description ,this.SerieID);
             return this.ModelID != -1;
         }
 
@@ -78,7 +86,7 @@ namespace POS_BLL
         // ============================
         bool _Update()
         {
-            return clsModelData.Update(this.ModelID, this.Name, this.Description);
+            return clsModelData.Update(this.ModelID, this.Name, this.Description ,this.SerieID);
         }
 
         // ============================

@@ -10,7 +10,7 @@ namespace POS_DAL
         // ============================
         // ADD NEW MODEL
         // ============================
-        public static int AddNew(string name, string description)
+        public static int AddNew(string name, string description, int? seriesID)
         {
             try
             {
@@ -18,16 +18,24 @@ namespace POS_DAL
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        INSERT INTO Models (Name, Description)
-                        VALUES (@Name, @Description);
-                        SELECT last_insert_rowid();
-                    ";
+                INSERT INTO Models (Name, Description, SeriesID)
+                VALUES (@Name, @Description, @SeriesID);
+                SELECT last_insert_rowid();
+            ";
 
                     command.Parameters.AddWithValue("@Name", name);
-                    command.Parameters.AddWithValue(
-                        "@Description",
-                        string.IsNullOrEmpty(description) ? (object)DBNull.Value : description
-                    );
+
+                    // Description
+                    if (string.IsNullOrEmpty(description))
+                        command.Parameters.AddWithValue("@Description", DBNull.Value);
+                    else
+                        command.Parameters.AddWithValue("@Description", description);
+
+                    // SeriesID
+                    if (seriesID.HasValue)
+                        command.Parameters.AddWithValue("@SeriesID", seriesID.Value);
+                    else
+                        command.Parameters.AddWithValue("@SeriesID", DBNull.Value);
 
                     object result = command.ExecuteScalar();
                     return result == null ? -1 : Convert.ToInt32((long)result);
@@ -42,7 +50,7 @@ namespace POS_DAL
         // ============================
         // UPDATE MODEL
         // ============================
-        public static bool Update(int modelID, string name, string description)
+        public static bool Update(int modelID, string name, string description, int? seriesID)
         {
             try
             {
@@ -50,18 +58,27 @@ namespace POS_DAL
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        UPDATE Models
-                        SET Name = @Name,
-                            Description = @Description
-                        WHERE ModelID = @ModelID;
-                    ";
+                UPDATE Models
+                SET Name = @Name,
+                    Description = @Description,
+                    SeriesID = @SeriesID
+                WHERE ModelID = @ModelID;
+            ";
 
                     command.Parameters.AddWithValue("@ModelID", modelID);
                     command.Parameters.AddWithValue("@Name", name);
-                    command.Parameters.AddWithValue(
-                        "@Description",
-                        string.IsNullOrEmpty(description) ? (object)DBNull.Value : description
-                    );
+
+                    // Description
+                    if (string.IsNullOrEmpty(description))
+                        command.Parameters.AddWithValue("@Description", DBNull.Value);
+                    else
+                        command.Parameters.AddWithValue("@Description", description);
+
+                    // SeriesID
+                    if (seriesID.HasValue)
+                        command.Parameters.AddWithValue("@SeriesID", seriesID.Value);
+                    else
+                        command.Parameters.AddWithValue("@SeriesID", DBNull.Value);
 
                     return command.ExecuteNonQuery() > 0;
                 }
@@ -309,7 +326,7 @@ namespace POS_DAL
         // ============================
         // GET MODEL BY ID
         // ============================
-        public static bool GetByID(int modelID, ref string name, ref string description)
+        public static bool GetByID(int modelID, ref string name, ref string description, ref int? seriesID)
         {
             try
             {
@@ -317,10 +334,10 @@ namespace POS_DAL
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT Name, Description
-                        FROM Models
-                        WHERE ModelID = @ModelID;
-                    ";
+                SELECT Name, Description, SeriesID
+                FROM Models
+                WHERE ModelID = @ModelID;
+            ";
                     command.Parameters.AddWithValue("@ModelID", modelID);
 
                     using (SqliteDataReader reader = command.ExecuteReader())
@@ -328,9 +345,15 @@ namespace POS_DAL
                         if (reader.Read())
                         {
                             name = reader["Name"].ToString();
+
                             description = reader["Description"] == DBNull.Value
                                 ? null
                                 : reader["Description"].ToString();
+
+                            seriesID = reader["SeriesID"] == DBNull.Value
+                                ? (int?)null
+                                : Convert.ToInt32(reader["SeriesID"]);
+
                             return true;
                         }
                         return false;
@@ -346,7 +369,7 @@ namespace POS_DAL
         // ============================
         // GET MODEL BY NAME
         // ============================
-        public static bool GetByName(string name, ref int modelID, ref string description)
+        public static bool GetByName(string name, ref int modelID, ref string description, ref int? seriesID)
         {
             try
             {
@@ -354,11 +377,11 @@ namespace POS_DAL
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT ModelID, Description
-                        FROM Models
-                        WHERE Name = @Name
-                        LIMIT 1;
-                    ";
+                SELECT ModelID, Description, SeriesID
+                FROM Models
+                WHERE Name = @Name
+                LIMIT 1;
+            ";
                     command.Parameters.AddWithValue("@Name", name);
 
                     using (SqliteDataReader reader = command.ExecuteReader())
@@ -366,9 +389,15 @@ namespace POS_DAL
                         if (reader.Read())
                         {
                             modelID = Convert.ToInt32(reader["ModelID"]);
+
                             description = reader["Description"] == DBNull.Value
                                 ? null
                                 : reader["Description"].ToString();
+
+                            seriesID = reader["SeriesID"] == DBNull.Value
+                                ? (int?)null
+                                : Convert.ToInt32(reader["SeriesID"]);
+
                             return true;
                         }
                         return false;
@@ -392,9 +421,14 @@ namespace POS_DAL
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT ModelID, Name, Description
-                        FROM Models;
-                    ";
+                                                SELECT 
+                                                    m.ModelID,
+                                                    m.Name,
+                                                    m.Description,
+                                                    s.Name AS SeriesName
+                                                FROM Models m
+                                                LEFT JOIN Series s ON m.SeriesID = s.SeriesID;
+                                            ";
 
                     using (SqliteDataReader reader = command.ExecuteReader())
                     {

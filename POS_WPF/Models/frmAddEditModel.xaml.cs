@@ -1,6 +1,7 @@
 ﻿using POS_BLL;
 using POS_WPF.Controls;
 using POS_WPF.Pages;
+using POS_WPF.Serie;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,6 +33,7 @@ namespace POS_WPF.Models
 
         clsModel _Model;
         int _ModelID = -1;
+        int _SelectedSerieID = -1;
 
         public frmAddEditModel()
         {
@@ -81,6 +83,34 @@ namespace POS_WPF.Models
                 return null;
             });
         }
+
+        private void LoadSeriesToComboBox()
+        {
+            try
+            {
+                cmbSerie.Items.Clear();
+
+                DataTable dt = clsSeries.GetAll();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    cmbSerie.Items.Add(new ComboBoxItem
+                    {
+                        Content = row["Name"].ToString(),
+                        Tag = Convert.ToInt32(row["SeriesID"])
+                    });
+                }
+
+                if (cmbSerie.Items.Count > 0)
+                    cmbSerie.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading brands: " + ex.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void LoadWarehousesToListBox()
         {
             try
@@ -144,6 +174,8 @@ namespace POS_WPF.Models
         {
             ResetDefaultValues();
 
+            LoadSeriesToComboBox();
+
             LoadWarehousesToListBox();
 
             _isLoadingForm = true;
@@ -202,6 +234,17 @@ namespace POS_WPF.Models
             ModelName.Text = _Model.Name;
             ModelDescription.Text = _Model.Description;
 
+            // Select the matching brand in the combo box
+            foreach (ComboBoxItem item in cmbSerie.Items)
+            {
+                if ((int)item.Tag == _Model.SerieID)
+                {
+                    cmbSerie.SelectedItem = item;
+                    _SelectedSerieID = _Model.SerieID ?? -1;
+                    break;
+                }
+            }
+
             LoadSelectedWarehouses();
         }
 
@@ -210,6 +253,9 @@ namespace POS_WPF.Models
 
             _Model.Name = ModelName.Text.Trim();
             _Model.Description = ModelDescription.Text;
+            _Model.SerieID = cmbSerie.SelectedItem is ComboBoxItem selectedItem
+                ? (int)selectedItem.Tag
+                : (int?)null;
 
             if (_Model.Save())
             {
@@ -577,6 +623,19 @@ namespace POS_WPF.Models
             public bool IsValid { get; set; }
             public List<string> Errors { get; set; }
             public FrameworkElement FirstInvalidControl { get; set; }
+        }
+
+        private void btnManageWarehouses_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditSerie frmAdd = new frmAddEditSerie();
+            frmAdd.ShowDialog();
+            LoadSeriesToComboBox();
+        }
+
+        private void cmbSerie_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbSerie.SelectedItem is ComboBoxItem selected)
+                _SelectedSerieID = (int)selected.Tag;
         }
     }
 

@@ -27,10 +27,11 @@ namespace POS_WPF
             InitializeComponent();
 
             var card = new ProductCard();
-            card.LoadProduct(5, 1); // Example: productID=1, warehouseID=1
+            card.LoadProduct(5, 1);
+            // Example: productID=1, warehouseID=1
             //MainGrid.Children.Add(card); // Assuming your Grid is named MainGrid
-            string cs = clsDataAccessSettigs.ConnectionString;
-            MessageBox.Show(cs);
+            //string cs = clsDataAccessSettigs.ConnectionString;
+            //MessageBox.Show(cs);
         }
 
         private void ShowGalleryButton_Click(object sender, RoutedEventArgs e)

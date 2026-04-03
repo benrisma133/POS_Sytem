@@ -149,6 +149,49 @@
             </Setter>
         </Style>
 
+        <!-- Smooth Tooltip Style -->
+        <Style x:Key="SmoothToolTip" TargetType="ToolTip">
+            <!-- SHOW FAST -->
+            <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+            <Setter Property="ToolTipService.BetweenShowDelay" Value="0"/>
+            <Setter Property="ToolTipService.ShowDuration" Value="1000"/>
+
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Placement" Value="Right"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="Background" Value="#2C2C2C"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="ToolTip.Opened">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <!-- FAST but SMOOTH -->
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             From="0" To="1"
+                                             Duration="0:0:0.15"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+
 
     </Window.Resources>
 
@@ -275,6 +318,61 @@
                             BorderRadius="20"
                             MinLength="2"
                             Margin="0,0,0,20"/>
+
+                        <!-- Serie ComboBox -->
+                        <StackPanel Margin="0,0,0,20">
+                            <TextBlock Text="Serie"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2C3E50"
+                                       Margin="0,0,0,6"/>
+
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                                <ComboBox x:Name="cmbSerie"
+                                          Style="{StaticResource ModernComboBox}"
+                                          ItemContainerStyle="{StaticResource ModernComboBoxItem}"
+                                          HorizontalAlignment="Left"
+                                          Width="220"
+                                          VerticalAlignment="Center"
+                                          SelectedIndex="0"
+                                          Cursor="Hand"
+                                          SelectionChanged="cmbSerie_SelectionChanged">
+                                    <!-- Items will be populated from code-behind -->
+                                </ComboBox>
+                                <Button x:Name="btnAddSerie"
+                                        Width="40"
+                                        Height="30"
+                                        Margin="10,0,0,0"
+                                        Background="#FF8C42"
+                                        Foreground="White"
+                                        Style="{StaticResource SweetButton}"
+                                        ToolTipService.InitialShowDelay="50"
+                                        ToolTipService.BetweenShowDelay="0"
+                                        ToolTipService.ShowDuration="60000" Click="btnManageWarehouses_Click">
+
+                                    <Button.ToolTip>
+                                        <ToolTip Style="{StaticResource SmoothToolTip}"
+                                                 Content="Add serie"
+                                                 Placement="Right"
+                                                 HorizontalOffset="10"/>
+                                    </Button.ToolTip>
+
+                                    <Viewbox Width="18" Height="18">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                  StrokeThickness="2"
+                                                  StrokeStartLineCap="Round"
+                                                  StrokeEndLineCap="Round"
+                                                  Data="M12 5 L12 19 M5 12 L19 12"/>
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+
+                            </StackPanel>
+
+
+                        </StackPanel>
 
                         <controls:TextArea
                             x:Name="ModelDescription"
