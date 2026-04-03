@@ -318,7 +318,7 @@ namespace POS_WPF.Pages
                 Background = new SolidColorBrush(Color.FromRgb(255, 243, 232)),
                 BorderBrush = new SolidColorBrush(Color.FromRgb(255, 140, 66)),
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(20),
+                CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(8, 2, 8, 2),
                 Margin = new Thickness(0, 4, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Left

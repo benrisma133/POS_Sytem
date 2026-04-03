@@ -69,7 +69,7 @@ namespace POS_WPF.Pages
                     cmbWarehouse.Items.Clear();
 
                     // Add default option
-                    cmbWarehouse.Items.Add("All Categories");
+                    cmbWarehouse.Items.Add("All Warehouses");
 
                     foreach (DataRow row in dt.Rows)
                     {
@@ -109,7 +109,7 @@ namespace POS_WPF.Pages
                 string filter = (await Task.Run(() => GetSearchText()))?.ToLower() ?? "";
 
                 // Determine warehouse if not provided
-                string warehouseName = "All Models";
+                string warehouseName = "All Warehouses";
                 if (warehouseID == null && cmbWarehouse != null)
                 {
                     if (cmbWarehouse.SelectedIndex > 0 && cmbWarehouse.SelectedItem is ComboBoxItem selectedItem)
@@ -161,9 +161,11 @@ namespace POS_WPF.Pages
                         int id = Convert.ToInt32(row["ModelID"]);
                         string name = row["Name"].ToString();
                         string description = row["Description"].ToString();
+                        string seriesName = row["SeriesName"] != DBNull.Value ? row["SeriesName"].ToString() : "";
+                        string brandName = row["BrandName"] != DBNull.Value ? row["BrandName"].ToString() : "";
 
                         DynamicCardContainer.Items.Add(
-                            CreateModelCard(id, name, description, cardWidth)
+                            CreateModelCard(id, name, description, seriesName, brandName,cardWidth)
                         );
                     }
 
@@ -209,7 +211,7 @@ namespace POS_WPF.Pages
             return availableWidth > 900 ? 420 : availableWidth - 20;
         }
 
-        private Border CreateModelCard(int id, string name, string description, double width)
+        private Border CreateModelCard(int id, string name, string description, string seriesName, string brandName, double width)
         {
             Border cardBorder = new Border
             {
@@ -241,8 +243,38 @@ namespace POS_WPF.Pages
 
             StackPanel textStack = new StackPanel();
 
-            // Model Name
-            textStack.Children.Add(new TextBlock
+            // ── Badge + Name row ──
+            StackPanel badgeAndNameStack = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 8, 4)
+            };
+
+            // Coloured initial badge
+            Border badge = new Border
+            {
+                Width = 54,
+                Height = 54,
+                Margin = new Thickness(8, 0, 18, 0),
+                Background = new SolidColorBrush(Color.FromRgb(16, 185, 129)),
+                CornerRadius = new CornerRadius(10)
+            };
+            badge.Child = new TextBlock
+            {
+                Text = name.Length > 0 ? name[0].ToString().ToUpper() : "M",
+                FontSize = 24,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            badgeAndNameStack.Children.Add(badge);
+
+            // Name + pills column
+            StackPanel nameAndPills = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+
+            nameAndPills.Children.Add(new TextBlock
             {
                 Text = name,
                 FontSize = 20,
@@ -251,52 +283,116 @@ namespace POS_WPF.Pages
                 FontFamily = new FontFamily("Segoe UI")
             });
 
-            // Description
-            TextBlock descriptionBlock = new TextBlock
+            // Pills row (Series + Brand side by side)
+            StackPanel pillsRow = new StackPanel
             {
-                Text = string.IsNullOrWhiteSpace(description) ? "No description available" : description,
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0, 4, 0, 0)
+            };
+
+            // Series pill
+            bool hasSeries = !string.IsNullOrWhiteSpace(seriesName);
+            Border seriesPill = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(232, 244, 255)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(66, 153, 225)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(8, 2, 8, 2),
+                Margin = new Thickness(0, 0, 6, 0)
+            };
+            seriesPill.Child = new TextBlock
+            {
+                Text = hasSeries ? seriesName : "No Series",
+                FontSize = 12,
+                Foreground = new SolidColorBrush(Color.FromRgb(0, 80, 160)),
+                FontFamily = new FontFamily("Segoe UI"),
+                FontStyle = hasSeries ? FontStyles.Normal : FontStyles.Italic
+            };
+            pillsRow.Children.Add(seriesPill);
+
+            // Brand pill
+            bool hasBrand = !string.IsNullOrWhiteSpace(brandName);
+            Border brandPill = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(255, 243, 232)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(255, 140, 66)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(8, 2, 8, 2)
+            };
+            brandPill.Child = new TextBlock
+            {
+                Text = hasBrand ? brandName : "No Brand",
+                FontSize = 12,
+                Foreground = new SolidColorBrush(Color.FromRgb(180, 80, 0)),
+                FontFamily = new FontFamily("Segoe UI"),
+                FontStyle = hasBrand ? FontStyles.Normal : FontStyles.Italic
+            };
+            pillsRow.Children.Add(brandPill);
+
+            nameAndPills.Children.Add(pillsRow);
+            badgeAndNameStack.Children.Add(nameAndPills);
+            textStack.Children.Add(badgeAndNameStack);
+
+            // Description
+            bool hasDesc = !string.IsNullOrWhiteSpace(description);
+            textStack.Children.Add(new TextBlock
+            {
+                Text = hasDesc ? description : "No description available",
                 FontSize = 14,
                 Margin = new Thickness(0, 8, 0, 0),
                 TextWrapping = TextWrapping.Wrap,
-                Foreground = string.IsNullOrWhiteSpace(description) ? new SolidColorBrush(Color.FromRgb(148, 163, 184)) : new SolidColorBrush(Color.FromRgb(100, 116, 139)),
-                FontStyle = string.IsNullOrWhiteSpace(description) ? FontStyles.Italic : FontStyles.Normal,
+                Foreground = new SolidColorBrush(
+                    hasDesc ? Color.FromRgb(100, 116, 139) : Color.FromRgb(148, 163, 184)),
                 FontFamily = new FontFamily("Segoe UI"),
-                LineHeight = 20
-            };
-            textStack.Children.Add(descriptionBlock);
+                LineHeight = 20,
+                FontStyle = hasDesc ? FontStyles.Normal : FontStyles.Italic
+            });
 
             cardGrid.Children.Add(textStack);
 
-            // Buttons stack
-            StackPanel buttonStack = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
+            // ── Action buttons ──
+            StackPanel buttonStack = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Visibility = Visibility.Collapsed
+            };
             Grid.SetColumn(buttonStack, 1);
 
             Button editBtn = CardButtonsFactory.CreateEditButton(BtnEdit_Click, id);
             Button deleteBtn = CardButtonsFactory.CreateDeleteButton(BtnDelete_Click, id);
             deleteBtn.Margin = new Thickness(8, 0, 0, 0);
+
             buttonStack.Children.Add(editBtn);
             buttonStack.Children.Add(deleteBtn);
-
             cardGrid.Children.Add(buttonStack);
+
             cardBorder.Child = cardGrid;
 
-            // Loaded animation (fade + slide)
+            // ── Entrance animation (fade + slide) ──
             cardBorder.Loaded += (s, e) =>
             {
                 var fadeAnim = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400))
-                { EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut } };
+                {
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                };
                 cardBorder.BeginAnimation(Border.OpacityProperty, fadeAnim);
 
-                ((TranslateTransform)cardBorder.RenderTransform).BeginAnimation(TranslateTransform.YProperty,
+                ((TranslateTransform)cardBorder.RenderTransform).BeginAnimation(
+                    TranslateTransform.YProperty,
                     new DoubleAnimation(20, 0, TimeSpan.FromMilliseconds(400))
-                    { EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut } });
+                    {
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                    });
             };
 
-            // Crazy hover like WarehouseCard
+            // ── Hover ──
             cardBorder.MouseEnter += (s, e) => Card_MouseEnterAnimations(cardBorder, buttonStack);
             cardBorder.MouseLeave += (s, e) => Card_MouseLeaveAnimations(cardBorder, buttonStack);
 
-            // Scroll wheel support
+            // ── Scroll passthrough ──
             cardBorder.PreviewMouseWheel += (s, e) =>
             {
                 if (CardScrollViewer != null)

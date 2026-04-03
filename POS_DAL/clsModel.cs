@@ -425,9 +425,11 @@ namespace POS_DAL
                                                     m.ModelID,
                                                     m.Name,
                                                     m.Description,
-                                                    s.Name AS SeriesName
+                                                    s.Name AS SeriesName,
+                                                    b.Name AS BrandName
                                                 FROM Models m
-                                                LEFT JOIN Series s ON m.SeriesID = s.SeriesID;
+                                                LEFT JOIN Series s ON m.SeriesID = s.SeriesID
+                                                LEFT JOIN Brands b ON s.BrandID = b.BrandID;
                                             ";
 
                     using (SqliteDataReader reader = command.ExecuteReader())
@@ -490,9 +492,15 @@ namespace POS_DAL
                 using (SqliteConnection connection = DbHelper.OpenConnection())
                 using (SqliteCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = @"
-                        SELECT m.ModelID, m.Name, m.Description
-                        FROM Models m
+                    command.CommandText = @"SELECT 
+                                                    m.ModelID,
+                                                    m.Name,
+                                                    m.Description,
+                                                    s.Name AS SeriesName,
+                                                    b.Name AS BrandName
+                                                FROM Models m
+                                                LEFT JOIN Series s ON m.SeriesID = s.SeriesID
+                                                LEFT JOIN Brands b ON s.BrandID = b.BrandID
                         INNER JOIN WarehouseModels wm
                             ON m.ModelID = wm.ModelID
                         WHERE wm.WarehouseID = @WarehouseID;
