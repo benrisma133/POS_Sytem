@@ -15,10 +15,10 @@ namespace POS_BLL
         public string Description { get; set; }
 
         // New for stock operations
-        public int WarehouseID { get; private set; }
+        public int WarehouseID { get;  set; }
 
         public int StockID { get; private set; }
-        public int Quantity { get; private set; }
+        public int Quantity { get; set; }
 
         public clsCategory Category { get; private set; }
         public clsModel Model { get; private set; }
@@ -92,11 +92,13 @@ namespace POS_BLL
 
         private bool _Update()
         {
+            // When not transferring, destination = same warehouse
+            _transferToWarehouseID = WarehouseID;
             clsProductData.Update(ProductID, ProductName, Description, Price, CategoryID, ModelID, WarehouseID, _transferToWarehouseID, Quantity);
             return true;
         }
 
-        private bool _Transfer()
+        public bool Transfer()
         {
 
             bool isTransfered = clsProductData.TransferProduct(ProductID, WarehouseID, _transferToWarehouseID, Quantity);
@@ -112,14 +114,22 @@ namespace POS_BLL
 
         public bool Save()
         {
-            if (_mode == enMode.AddNew)
-                return _AddNew();
-            else if (_mode == enMode.Update)
-                return _Update();
-            else if (_mode == enMode.Transfer)
-                return _Transfer();
-            else
-                return false;
+            switch (_mode)
+            {
+                case enMode.AddNew:
+                    {
+                        if (_AddNew())
+                        {
+                            _mode = enMode.Update;
+                            return true;
+                        }
+                        return false;
+                    }
+                case enMode.Update:
+                    return _Update();
+            }
+
+            return false;
         }
 
         // ============================

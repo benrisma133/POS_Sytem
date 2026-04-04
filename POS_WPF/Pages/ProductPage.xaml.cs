@@ -23,6 +23,13 @@ namespace POS_WPF.Pages
 
         private bool _isLoaded = false;
 
+        // At the top of your page/window class, add this helper
+        private struct ProductCardTag
+        {
+            public int ProductID;
+            public int WarehouseID;
+        }
+
         public ProductPage()
         {
             InitializeComponent();
@@ -118,7 +125,8 @@ namespace POS_WPF.Pages
                                 Convert.ToInt32(row["Quantity"]),
                                 cardWidth,
                                 row["WarehouseName"].ToString(),
-                                row["WarehouseColor"].ToString()
+                                row["WarehouseColor"].ToString(),
+                                Convert.ToInt32(row["WarehouseID"])
                             );
 
                             DynamicCardContainer.Items.Add(card);
@@ -252,7 +260,8 @@ namespace POS_WPF.Pages
             int quantity,
             double width,
             string warehouse,
-            string warehouseColor)
+            string warehouseColor,
+            int warehouseID)
         {
             // ---------- CARD BORDER ----------
             Border cardBorder = new Border
@@ -265,7 +274,7 @@ namespace POS_WPF.Pages
                 Padding = new Thickness(20),
                 Margin = new Thickness(0, 0, 12, 12),
                 Cursor = Cursors.Hand,
-                Tag = id,
+                Tag = new ProductCardTag { ProductID = id, WarehouseID = warehouseID },
                 Opacity = 0,
                 RenderTransformOrigin = new Point(0.5, 0.5),
                 RenderTransform = new TransformGroup
@@ -440,9 +449,10 @@ namespace POS_WPF.Pages
                 Visibility = Visibility.Collapsed
             };
 
-            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateEditButton(BtnEdit_Click, id), "Edit"));
-            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateTransferButton(BtnTransfer_Click, id), "Transfer"));
-            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateDeleteButton(BtnDelete_Click, id), "Delete"));
+            var cardTag = new ProductCardTag { ProductID = id, WarehouseID = warehouseID };
+            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateEditButton(BtnEdit_Click, cardTag), "Edit"));
+            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateTransferButton(BtnTransfer_Click, cardTag), "Transfer"));
+            buttonsStack.Children.Add(CreateButtonWithHoverText(CardButtonsFactory.CreateDeleteButton(BtnDelete_Click, cardTag), "Delete"));
 
             Grid.SetColumn(buttonsStack, 1);
             contentGrid.Children.Add(buttonsStack);
@@ -693,14 +703,18 @@ namespace POS_WPF.Pages
         // ================= BUTTON EVENTS =================
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            int productId = (int)((Button)sender).Tag;
-            // Open edit product window
+            var tag = (ProductCardTag)((Button)sender).Tag;
+            frmAddEditProduct editProductWindow = new frmAddEditProduct(tag.ProductID, tag.WarehouseID);
+            editProductWindow.Owner = Application.Current.MainWindow;
+            editProductWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            editProductWindow.ShowDialog();
         }
 
         private void BtnTransfer_Click(object sender, RoutedEventArgs e)
         {
             int productId = (int)((Button)sender).Tag;
-            // Open transfer window
+            frmTransferProduct frmTransferProduct = new frmTransferProduct(productId);
+            frmTransferProduct.ShowDialog();
         }
 
         private async void BtnDelete_Click(object sender, RoutedEventArgs e)
