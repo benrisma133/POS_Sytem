@@ -283,6 +283,9 @@
     <Compile Include="Models\frmAddEditModel.xaml.cs">
       <DependentUpon>frmAddEditModel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Product\frmTransferProduct.xaml.cs">
+      <DependentUpon>frmTransferProduct.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -364,6 +367,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Models\frmAddEditModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Product\frmTransferProduct.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
