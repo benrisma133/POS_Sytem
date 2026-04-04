@@ -97,6 +97,11 @@ namespace POS_BLL
             return clsSeriesData.GetAll();
         }
 
+        public static DataTable GetByBrandID(int brandID)
+        {
+            return clsSeriesData.GetByBrandID(brandID);
+        }
+
         public static List<int> GetAllSeriesIDs()
         {
             return clsSeriesData.GetAllSeriesIDs();

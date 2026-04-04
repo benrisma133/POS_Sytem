@@ -209,6 +209,42 @@ namespace POS_DAL
             }
         }
 
+        public static DataTable GetByBrandID(int brandID)
+        {
+            try
+            {
+                using (SqliteConnection connection = DbHelper.OpenConnection())
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT 
+                    s.SeriesID,
+                    s.BrandID,
+                    b.Name AS BrandName,
+                    s.Name,
+                    s.Description
+                FROM Series s
+                INNER JOIN Brands b ON s.BrandID = b.BrandID
+                WHERE s.BrandID = @BrandID
+                ORDER BY s.SeriesID;
+            ";
+
+                    command.Parameters.AddWithValue("@BrandID", brandID);
+
+                    using (SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        DataTable dt = new DataTable();
+                        dt.Load(reader);
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in Get Series By BrandID: " + ex.Message);
+            }
+        }
+
         // ============================
         // CHECK IF SERIES EXISTS BY NAME
         // ============================

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using POS_WPF.Models;
+using MahApps.Metro.Controls;
 
 namespace POS_WPF.Pages
 {
@@ -95,20 +96,17 @@ namespace POS_WPF.Pages
             }
         }
 
-        public async Task LoadItemsAsync(int? warehouseID = null)
+        public async Task LoadItemsAsync(int? warehouseID = null, int? brandID = null, int? serieID = null)
         {
             try
             {
                 if (LoadingOverlay != null)
                     LoadingOverlay.Visibility = Visibility.Visible;
-
                 if (txtTitle != null)
                     txtTitle.Text = "Loading...";
 
-                // Get search text off UI thread
                 string filter = (await Task.Run(() => GetSearchText()))?.ToLower() ?? "";
 
-                // Determine warehouse if not provided
                 string warehouseName = "All Warehouses";
                 if (warehouseID == null && cmbWarehouse != null)
                 {
@@ -116,7 +114,6 @@ namespace POS_WPF.Pages
                     {
                         if (int.TryParse(selectedItem.Tag?.ToString(), out int parsedId))
                             warehouseID = parsedId;
-
                         warehouseName = selectedItem.Content.ToString();
                     }
                 }
@@ -132,7 +129,6 @@ namespace POS_WPF.Pages
                     }
                 }
 
-                // Load models off UI thread
                 DataTable dtModels = await Task.Run(() =>
                 {
                     if (warehouseID == null)
@@ -141,16 +137,30 @@ namespace POS_WPF.Pages
                         return clsModel.GetByWarehouseID(warehouseID.Value);
                 });
 
-                // Filter rows off UI thread
                 var filteredRows = await Task.Run(() =>
                     dtModels.AsEnumerable()
                         .Where(row =>
-                            row["Name"].ToString().ToLower().Contains(filter) ||
-                            row["Description"].ToString().ToLower().Contains(filter))
+                        {
+                            // Text search
+                            bool matchesSearch =
+                                row["Name"].ToString().ToLower().Contains(filter) ||
+                                row["Description"].ToString().ToLower().Contains(filter);
+
+                            // Brand filter
+                            bool matchesBrand = brandID == null ||
+                                (row["BrandID"] != DBNull.Value &&
+                                 Convert.ToInt32(row["BrandID"]) == brandID.Value);
+
+                            // Serie filter
+                            bool matchesSerie = serieID == null ||
+                                (row["SeriesID"] != DBNull.Value &&
+                                 Convert.ToInt32(row["SeriesID"]) == serieID.Value);
+
+                            return matchesSearch && matchesBrand && matchesSerie;
+                        })
                         .ToList()
                 );
 
-                // Update UI on main thread
                 DynamicCardContainer.Dispatcher.Invoke(() =>
                 {
                     DynamicCardContainer.Items.Clear();
@@ -165,18 +175,16 @@ namespace POS_WPF.Pages
                         string brandName = row["BrandName"] != DBNull.Value ? row["BrandName"].ToString() : "";
 
                         DynamicCardContainer.Items.Add(
-                            CreateModelCard(id, name, description, seriesName, brandName,cardWidth)
+                            CreateModelCard(id, name, description, seriesName, brandName, cardWidth)
                         );
                     }
 
-                    // Show message if no models
                     if (NoModelsMessage != null)
                     {
                         NoModelsMessage.Text = $"No models for {warehouseName}";
                         NoModelsMessage.Visibility = filteredRows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
                     }
 
-                    // Fix WrapPanel alignment
                     var wrapPanel = FindVisualChild<WrapPanel>(DynamicCardContainer);
                     if (wrapPanel != null)
                     {
@@ -187,11 +195,9 @@ namespace POS_WPF.Pages
 
                     UpdateCardWidths();
 
-                    // Update title
                     if (txtTitle != null)
                         txtTitle.Text = $"Model Management - {warehouseName}";
 
-                    // Update total models
                     if (txtTotalModels != null)
                         txtTotalModels.Text = $"Total Models: {filteredRows.Count}";
                 });
@@ -205,10 +211,14 @@ namespace POS_WPF.Pages
 
         private double GetCardWidth()
         {
-            var wrapPanel = FindVisualChild<WrapPanel>(DynamicCardContainer);
-            if (wrapPanel == null) return 400;
-            double availableWidth = wrapPanel.ActualWidth - wrapPanel.Margin.Left - wrapPanel.Margin.Right;
-            return availableWidth > 900 ? 420 : availableWidth - 20;
+            double availableWidth = Math.Max(0,
+                CardScrollViewer.ActualWidth - 28);
+
+            if (availableWidth == 0) return 400;
+
+            return availableWidth > 760
+                ? (availableWidth / 2) - 16
+                : availableWidth - 20;
         }
 
         private Border CreateModelCard(int id, string name, string description, string seriesName, string brandName, double width)
@@ -523,7 +533,10 @@ namespace POS_WPF.Pages
             if (wrapPanel == null) return;
 
             int cardCount = wrapPanel.Children.Count;
-            double availableWidth = CardScrollViewer.ActualWidth - wrapPanel.Margin.Left - wrapPanel.Margin.Right - 16;
+            double availableWidth = Math.Max(0,
+                CardScrollViewer.ActualWidth - wrapPanel.Margin.Left - wrapPanel.Margin.Right - 16);
+
+            if (availableWidth == 0) return;
 
             foreach (var child in wrapPanel.Children)
             {
@@ -532,9 +545,11 @@ namespace POS_WPF.Pages
                     if (cardCount == 1)
                         card.Width = availableWidth;
                     else if (cardCount == 2)
-                        card.Width = (availableWidth / 2) - 16;
+                        card.Width = Math.Max(0, (availableWidth / 2) - 16);
                     else
-                        card.Width = availableWidth > 760 ? (availableWidth / 2) - 16 : availableWidth - 20;
+                        card.Width = availableWidth > 760
+                            ? Math.Max(0, (availableWidth / 2) - 16)
+                            : Math.Max(0, availableWidth - 20);
                 }
             }
         }
@@ -630,6 +645,150 @@ namespace POS_WPF.Pages
         {
             //cmbWarehouse.IsDropDownOpen = !cmbWarehouse.IsDropDownOpen;
         }
+
+        // ======================= FILTER SIDEBAR =======================
+
+        private bool _isFilterPanelOpen = false;
+
+        private void BtnMoreFilter_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isFilterPanelOpen)
+                CloseFilterPanel();
+            else
+                OpenFilterPanel();
+        }
+
+        private void BtnCloseFilter_Click(object sender, RoutedEventArgs e)
+        {
+            CloseFilterPanel();
+        }
+
+        private void OpenFilterPanel()
+        {
+            _isFilterPanelOpen = true;
+
+            LoadBrandsToFilterCombo();
+            LoadSeriesToFilterCombo();
+
+            FilterPanel.Visibility = Visibility.Visible;
+
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            FilterPanel.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+        }
+
+        private void CloseFilterPanel()
+        {
+            _isFilterPanelOpen = false;
+
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            fadeOut.Completed += (s, e) => FilterPanel.Visibility = Visibility.Collapsed;
+            FilterPanel.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+        }
+
+        // ======================= LOAD FILTER COMBOS =======================
+
+        private void LoadBrandsToFilterCombo()
+        {
+            if (cmbFilterBrand == null) return;
+
+            try
+            {
+                cmbFilterBrand.Items.Clear();
+                cmbFilterBrand.Items.Add(new ComboBoxItem { Content = "All Brands" });
+
+                DataTable dt = clsBrand.GetAll();
+                foreach (DataRow row in dt.Rows)
+                {
+                    cmbFilterBrand.Items.Add(new ComboBoxItem
+                    {
+                        Content = row["Name"].ToString(),
+                        Tag = Convert.ToInt32(row["BrandID"])
+                    });
+                }
+
+                cmbFilterBrand.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading brands: " + ex.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadSeriesToFilterCombo(int? brandID = null)
+        {
+            if (cmbFilterSeries == null) return;
+
+            try
+            {
+                cmbFilterSeries.Items.Clear();
+                cmbFilterSeries.Items.Add(new ComboBoxItem { Content = "All Series" });
+
+                DataTable dt = brandID == null
+                    ? clsSeries.GetAll()
+                    : clsSeries.GetByBrandID(brandID.Value);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    cmbFilterSeries.Items.Add(new ComboBoxItem
+                    {
+                        Content = row["Name"].ToString(),
+                        Tag = Convert.ToInt32(row["SeriesID"])
+                    });
+                }
+
+                cmbFilterSeries.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading series: " + ex.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // ======================= FILTER EVENTS =======================
+
+        private void cmbFilterBrand_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Reload series filtered by the selected brand
+            if (cmbFilterBrand.SelectedItem is ComboBoxItem selected && selected.Tag is int brandID)
+                LoadSeriesToFilterCombo(brandID);
+            else
+                LoadSeriesToFilterCombo();
+        }
+
+        private void cmbFilterSeries_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
+
+        private async void BtnApplyFilter_Click(object sender, RoutedEventArgs e)
+        {
+            int? brandID = null;
+            int? serieID = null;
+
+            if (cmbFilterBrand.SelectedItem is ComboBoxItem brandItem && brandItem.Tag is int bID)
+                brandID = bID;
+
+            if (cmbFilterSeries.SelectedItem is ComboBoxItem serieItem && serieItem.Tag is int sID)
+                serieID = sID;
+
+            await LoadItemsAsync(brandID: brandID, serieID: serieID);
+        }
+
+        private async void BtnClearFilter_Click(object sender, RoutedEventArgs e)
+        {
+            cmbFilterBrand.SelectedIndex = 0;
+            LoadSeriesToFilterCombo();
+
+            await LoadItemsAsync();
+        }
+
 
     }
 

@@ -426,6 +426,8 @@ namespace POS_DAL
                                                     m.Name,
                                                     m.Description,
                                                     s.Name AS SeriesName,
+                                                    s.SeriesID,
+                                                    b.BrandID,
                                                     b.Name AS BrandName
                                                 FROM Models m
                                                 LEFT JOIN Series s ON m.SeriesID = s.SeriesID
@@ -497,6 +499,8 @@ namespace POS_DAL
                                                     m.Name,
                                                     m.Description,
                                                     s.Name AS SeriesName,
+                                                    s.SeriesID,
+                                                    b.BrandID, 
                                                     b.Name AS BrandName
                                                 FROM Models m
                                                 LEFT JOIN Series s ON m.SeriesID = s.SeriesID
