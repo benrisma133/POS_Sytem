@@ -314,7 +314,7 @@
                             TextChanged="ModelNameInput_TextChanged"
                             Placeholder="Enter the model name"
                             IsRequired="True"
-                            ValidationType="Name"
+                            ValidationType="AlphaNumeric"
                             BorderRadius="20"
                             MinLength="2"
                             Margin="0,0,0,20"/>

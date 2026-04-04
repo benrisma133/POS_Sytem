@@ -418,7 +418,7 @@ namespace POS_WPF.Controls
         {
             foreach (char c in text)
             {
-                if (!char.IsLetterOrDigit(c))
+                if (!char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c))
                     return false;
             }
             return true;
