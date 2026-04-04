@@ -1,4 +1,6 @@
-﻿using System;
+﻿using POS_WPF.Category;
+using POS_WPF.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,6 +56,25 @@ namespace POS_WPF.Product
 
         }
 
-        
+        private void btnAddWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditWarehouse frmAddEditWarehouse = new frmAddEditWarehouse();
+            frmAddEditWarehouse.ShowDialog();
+        }
+
+
+        private void btnAddCategory_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditCategory frmAddEditCategory = new frmAddEditCategory();
+            frmAddEditCategory.ShowDialog();
+        }
+
+        private void btnAddModel_Click(object sender, RoutedEventArgs e)
+        {
+            frmAddEditModel frmAddEditModel = new frmAddEditModel();
+            frmAddEditModel.ShowDialog();
+        }
+
+
     }
 }
