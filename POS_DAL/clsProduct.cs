@@ -328,5 +328,36 @@ namespace POS_DAL
                 throw new Exception("Error in Delete Product: " + ex.Message);
             }
         }
+
+        public static int GetQuantity(int productID, int warehouseID)
+        {
+            try
+            {
+                using (SqliteConnection connection = DbHelper.OpenConnection())
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                                                SELECT Quantity
+                                                FROM Stock
+                                                WHERE ProductID = @ProductID
+                                                  AND WarehouseID = @WarehouseID;
+                                            ";
+
+                    command.Parameters.AddWithValue("@ProductID", productID);
+                    command.Parameters.AddWithValue("@WarehouseID", warehouseID);
+
+                    object result = command.ExecuteScalar();
+
+                    if (result == null)
+                        return 0; // ماكاينش record يعني stock = 0
+
+                    return Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in GetQuantity: " + ex.Message);
+            }
+        }
     }
 }

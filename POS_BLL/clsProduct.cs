@@ -167,5 +167,10 @@ namespace POS_BLL
             clsProductData.DeleteCompletely(id);
             return true;
         }
+
+        public static int GetQuantityInWarehouse(int productID, int warehouseID)
+        {
+            return clsProductData.GetQuantity(productID, warehouseID);
+        }
     }
 }
