@@ -4,7 +4,7 @@
         xmlns:controls="clr-namespace:POS_WPF.Controls"
         Title="Transfer Product"
         Width="540"
-        Height="480"
+        Height="600"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         WindowStyle="None"
