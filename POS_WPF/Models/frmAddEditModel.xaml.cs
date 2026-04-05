@@ -170,6 +170,7 @@ namespace POS_WPF.Models
                         : $"{selected} warehouse(s) selected";
             }
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ResetDefaultValues();
