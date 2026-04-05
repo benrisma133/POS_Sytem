@@ -174,8 +174,6 @@ namespace POS_WPF.Pages
                 {
                     cmbWarehouse.Items.Clear();
 
-                    // Add default option
-                    cmbWarehouse.Items.Add("All Warehouses");
 
                     foreach (DataRow row in dt.Rows)
                     {
@@ -692,29 +690,41 @@ namespace POS_WPF.Pages
             UpdateCardWidths();
         }
 
-        private void BtnAddProduct_Click(object sender, RoutedEventArgs e)
+        private async void BtnAddProduct_Click(object sender, RoutedEventArgs e)
         {
             frmAddEditProduct addProductWindow = new frmAddEditProduct(); // Add mode
             addProductWindow.Owner = Application.Current.MainWindow;
             addProductWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             addProductWindow.ShowDialog();
+            if(addProductWindow.IsSaved)
+            {
+                await LoadProductsAsync();
+            }
         }
 
         // ================= BUTTON EVENTS =================
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private async void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
             var tag = (ProductCardTag)((Button)sender).Tag;
             frmAddEditProduct editProductWindow = new frmAddEditProduct(tag.ProductID, tag.WarehouseID);
             editProductWindow.Owner = Application.Current.MainWindow;
             editProductWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             editProductWindow.ShowDialog();
+            if (editProductWindow.IsSaved)
+            {
+                await LoadProductsAsync();
+            }
         }
 
-        private void BtnTransfer_Click(object sender, RoutedEventArgs e)
+        private async void BtnTransfer_Click(object sender, RoutedEventArgs e)
         {
-            int productId = (int)((Button)sender).Tag;
-            frmTransferProduct frmTransferProduct = new frmTransferProduct(productId);
+            var tag = (ProductCardTag)((Button)sender).Tag;
+            frmTransferProduct frmTransferProduct = new frmTransferProduct(tag.ProductID ,tag.WarehouseID);
             frmTransferProduct.ShowDialog();
+            if(frmTransferProduct.IsTransferred)
+            {
+                await LoadProductsAsync();
+            }
         }
 
         private async void BtnDelete_Click(object sender, RoutedEventArgs e)
