@@ -132,9 +132,16 @@
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0">
                             <!-- Transfer / arrows icon -->
-                            <Path Width="22" Height="22" Stretch="Uniform" Fill="#FF8C42"
-                                  Data="M7.5 21L3 16.5m0 0L7.5 12M3 16.5H21M16.5 3L21 7.5m0 0L16.5 12M21 7.5H3"/>
-
+                            <Viewbox Width="22" Height="22" Stretch="Uniform">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="#FF8C42"
+                                          Data="M4 15.2433C4.41421 15.2433 4.75 15.5791 4.75 15.9933V19C4.75 19.1381 4.86193 19.25 5 19.25H19C19.1381 19.25 19.25 19.1381 19.25 19V15.9933C19.25 15.5791 19.5858 15.2433 20 15.2433C20.4142 15.2433 20.75 15.5791 20.75 15.9933V19C20.75 19.9665 19.9665 20.75 19 20.75H5C4.0335 20.75 3.25 19.9665 3.25 19V15.9933C3.25 15.5791 3.58579 15.2433 4 15.2433Z"/>
+                                    <Path Fill="#FF8C42"
+                                          Data="M19.8697 10.8932C20.1696 11.1789 20.1811 11.6536 19.8953 11.9535L16.8477 15.1517C16.7061 15.3003 16.5099 15.3843 16.3047 15.3843C16.0995 15.3843 15.9033 15.3003 15.7618 15.1517L12.7142 11.9535C12.4284 11.6536 12.4399 11.1789 12.7397 10.8932C13.0396 10.6074 13.5143 10.6189 13.8001 10.9187L16.3047 13.5471L18.8094 10.9187C19.0951 10.6189 19.5699 10.6074 19.8697 10.8932Z"/>
+                                    <Path Fill="#FF8C42"
+                                          Data="M11.3524 4.75C9.03146 4.75 7.14999 6.63147 7.14999 8.95238V13.9582C7.14999 14.3724 6.81421 14.7082 6.39999 14.7082C5.98578 14.7082 5.64999 14.3724 5.64999 13.9582V8.95238C5.64999 5.80305 8.20304 3.25 11.3524 3.25C14.5017 3.25 17.0548 5.80304 17.0548 8.95238V13.9582C17.0548 14.3724 16.719 14.7082 16.3048 14.7082C15.8905 14.7082 15.5548 14.3724 15.5548 13.9582V8.95238C15.5548 6.63147 13.6733 4.75 11.3524 4.75Z"/>
+                                </Canvas>
+                            </Viewbox>
                             <TextBlock Margin="10,0,0,0"
                                        Text="Transfer Product"
                                        FontSize="18"
@@ -159,6 +166,13 @@
 
                         <TextBlock Text="Transfer Product"
                                    FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="#111827"
+                                   Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="txtbTitle" 
+                                   Text="Product Name"
+                                   FontSize="16"
                                    FontWeight="Bold"
                                    Foreground="#111827"
                                    Margin="0,0,0,10"/>
@@ -218,14 +232,19 @@
                         <!-- Arrow indicator -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                             <Border Background="#FFF3E8"
-                                    CornerRadius="50"
-                                    Width="36" Height="36">
-                                <Path Width="18" Height="18"
-                                      Stretch="Uniform"
-                                      Fill="#FF8C42"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      Data="M12 4L12 20M12 20L6 14M12 20L18 14"/>
+        CornerRadius="50"
+        Width="36" Height="36">
+                                <Viewbox Width="18" Height="18" Stretch="Uniform">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="#FF8C42"
+                  Data="M12 4L12 20M12 20L6 14M12 20L18 14"
+                  Stroke="#FF8C42"
+                  StrokeThickness="2"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Round"
+                  StrokeLineJoin="Round"/>
+                                    </Canvas>
+                                </Viewbox>
                             </Border>
                             <TextBlock Text="transferring to"
                                        FontSize="13"
@@ -299,9 +318,21 @@
                             Style="{StaticResource SweetButton}"
                             Click="Transfer_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <!-- swap/transfer icon -->
-                            <Path Style="{StaticResource IconStyle}" Fill="White"
-                                  Data="M7.5 21L3 16.5m0 0L7.5 12M3 16.5H21M16.5 3L21 7.5m0 0L16.5 12M21 7.5H3"/>
+                            <!-- Upload/Transfer icon (3 paths combined) -->
+                            <Viewbox Width="22" Height="22" Stretch="Uniform">
+                                <Canvas Width="24" Height="24">
+                                    <!-- Bottom bar -->
+                                    <Path Fill="White"
+                                          Data="M4 15.2433C4.41421 15.2433 4.75 15.5791 4.75 15.9933V19C4.75 19.1381 4.86193 19.25 5 19.25H19C19.1381 19.25 19.25 19.1381 19.25 19V15.9933C19.25 15.5791 19.5858 15.2433 20 15.2433C20.4142 15.2433 20.75 15.5791 20.75 15.9933V19C20.75 19.9665 19.9665 20.75 19 20.75H5C4.0335 20.75 3.25 19.9665 3.25 19V15.9933C3.25 15.5791 3.58579 15.2433 4 15.2433Z"/>
+                                    <!-- Arrow -->
+                                    <Path Fill="White"
+                                          Data="M19.8697 10.8932C20.1696 11.1789 20.1811 11.6536 19.8953 11.9535L16.8477 15.1517C16.7061 15.3003 16.5099 15.3843 16.3047 15.3843C16.0995 15.3843 15.9033 15.3003 15.7618 15.1517L12.7142 11.9535C12.4284 11.6536 12.4399 11.1789 12.7397 10.8932C13.0396 10.6074 13.5143 10.6189 13.8001 10.9187L16.3047 13.5471L18.8094 10.9187C19.0951 10.6189 19.5699 10.6074 19.8697 10.8932Z"/>
+                                    <!-- Top shape -->
+                                    <Path Fill="White"
+                                          Data="M11.3524 4.75C9.03146 4.75 7.14999 6.63147 7.14999 8.95238V13.9582C7.14999 14.3724 6.81421 14.7082 6.39999 14.7082C5.98578 14.7082 5.64999 14.3724 5.64999 13.9582V8.95238C5.64999 5.80305 8.20304 3.25 11.3524 3.25C14.5017 3.25 17.0548 5.80304 17.0548 8.95238V13.9582C17.0548 14.3724 16.719 14.7082 16.3048 14.7082C15.8905 14.7082 15.5548 14.3724 15.5548 13.9582V8.95238C15.5548 6.63147 13.6733 4.75 11.3524 4.75Z"/>
+                                </Canvas>
+                            </Viewbox>
+
                             <TextBlock Text="Transfer" Margin="10,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>

@@ -16,6 +16,8 @@ namespace POS_WPF.Product
 
         private int _availableQty = 0;
 
+        clsProduct _Product;
+
         public frmTransferProduct(int productId, int warehouseID)
         {
             InitializeComponent();
@@ -29,6 +31,8 @@ namespace POS_WPF.Product
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadWarehouses();
+            _Product = clsProduct.FindByIDInWarehouse(ProductID, WarehouseID);
+            txtbTitle.Text = $"Transfer Product : {_Product.ProductName}";
         }
 
         // ============================
@@ -208,16 +212,16 @@ namespace POS_WPF.Product
             // 7. Execute
             try
             {
-                clsProduct product = clsProduct.FindByIDInWarehouse(ProductID, fromId);
+                _Product = clsProduct.FindByIDInWarehouse(ProductID, fromId);
 
-                if (product == null)
+                if (_Product == null)
                 {
                     ShowError("Product not found in the selected source warehouse.");
                     return;
                 }
 
-                product.SetTransferMode(fromId, toId, qty);
-                bool success = product.Transfer();
+                _Product.SetTransferMode(fromId, toId, qty);
+                bool success = _Product.Transfer();
 
                 if (success)
                 {
